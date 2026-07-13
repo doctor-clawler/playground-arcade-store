@@ -1,0 +1,30 @@
+{
+  "id": "new-game",
+  "title": "새 게임",
+  "edition": "Browser Edition",
+  "version": "1.0.0",
+  "featured": false,
+  "genre": "퍼즐",
+  "tags": ["캐주얼"],
+  "players": "1인",
+  "orientation": "가로",
+  "sourcePath": "relative-folder-under-playground",
+  "bundleFiles": ["index.html", "styles.css", "game.js"],
+  "entry": "index.html",
+  "thumbnailSource": "relative-folder-under-playground/output/shot.png",
+  "shortDescription": "한 줄 설명",
+  "description": "상세 설명",
+  "controls": ["방향키 — 이동", "Space — 행동", "F — 전체화면"],
+  "accent": "#ff5c46",
+  "ink": "#171713",
+  "provenance": {
+    "channel": "#놀이터",
+    "channelId": "C0B07FH4M3R",
+    "threadTs": "0000000000.000000",
+    "threadUrl": "https://mibcompany.slack.com/archives/C0B07FH4M3R/p0000000000000000",
+    "author": "작성자",
+    "artifactId": null,
+    "artifactTitle": "local playable bundle",
+    "localSource": "../relative-folder-under-playground"
+  }
+}

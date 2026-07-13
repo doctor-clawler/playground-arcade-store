@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src http: https:; style-src http: https: 'unsafe-inline'; img-src http: https: data:; font-src http: https:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>이빨 피하기</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <button id="saveExitButton" class="primary-button">저장하고 나가기</button>
+        <div class="hud">
+          <span id="moneyLabel">0원</span>
+          <span id="statusLabel">로비</span>
+        </div>
+      </header>
+
+      <section class="game-layout" aria-label="이빨 피하기 게임">
+        <div class="stage-wrap">
+          <canvas id="game" width="960" height="600" aria-label="게임 화면"></canvas>
+          <div class="controls">
+            <button id="startButton" class="action-button">게임 시작</button>
+            <button id="attackButton" class="action-button" disabled>공격</button>
+          </div>
+        </div>
+
+        <aside class="side-actions">
+          <button id="shopButton" class="shop-toggle">상점</button>
+          <div id="shopPanel" class="shop-panel" hidden>
+            <div class="shop-head">
+              <strong>상점</strong>
+              <button id="closeShopButton" aria-label="상점 닫기">×</button>
+            </div>
+            <button class="shop-item" data-buy="invincible">
+              <span>1 무적</span>
+              <span class="shop-item-status">10000원</span>
+            </button>
+            <button class="shop-item" data-buy="hammer">
+              <span>2 이빨을 죽이세요</span>
+              <span class="shop-item-status">2000원</span>
+            </button>
+          </div>
+        </aside>
+      </section>
+    </main>
+    <script src="./game.bundle.js"></script>
+  
+<script src="./store-bridge.js"></script>
+</body>
+</html>

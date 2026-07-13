@@ -1,0 +1,16 @@
+{
+  "name": "playground-arcade-store",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/publish.mjs",
+    "sync": "node scripts/sync-games.mjs",
+    "validate": "node scripts/validate.mjs",
+    "add-game": "node scripts/add-game.mjs",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

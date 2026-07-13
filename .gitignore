@@ -1,0 +1,8 @@
+node_modules/
+.DS_Store
+.local/
+.playwright-cli/
+output/playwright/*
+output/visual-qa/*
+!output/playwright/.gitkeep
+!output/visual-qa/.gitkeep
