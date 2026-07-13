@@ -1,7 +1,6 @@
-import { readFile, writeFile } from "node:fs/promises";
-import { assertSafeId, manifestPath, readManifest } from "./lib.mjs";
+import { readFile } from "node:fs/promises";
+import { assertSafeId, readManifest } from "./lib.mjs";
 import { syncGames } from "./sync-games.mjs";
-import { validateBuild } from "./validate.mjs";
 
 const specFlag = process.argv.indexOf("--spec");
 if (specFlag < 0 || !process.argv[specFlag + 1]) {
@@ -16,7 +15,5 @@ for (const field of required) if (spec[field] == null) throw new Error(`Missing 
 const manifest = await readManifest();
 if (manifest.games.some((game) => game.id === spec.id)) throw new Error(`Game already registered: ${spec.id}`);
 manifest.games.push(spec);
-await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
-await syncGames();
-await validateBuild();
+await syncGames({ manifest, persistManifest: true });
 console.log(`Added and rebuilt ${spec.id}`);

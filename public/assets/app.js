@@ -102,6 +102,7 @@
 
   function fillDetail(game) {
     state.currentGame = game;
+    playerShell.dataset.orientation = game.orientation === "세로" ? "portrait" : "landscape";
     resetPlayer();
     $("#detail-position").textContent = `${String(games.indexOf(game) + 1).padStart(2, "0")} / ${String(games.length).padStart(2, "0")}`;
     $("#detail-edition").textContent = `${game.genre} — ${game.edition}`;

@@ -38,6 +38,7 @@ npm run add-game -- --spec ./my-game.json
 ```
 
 같은 ID, 허용 경로 밖 파일, 허용되지 않은 확장자, 누락 entry/thumbnail은 실패합니다. 추가 후 전체 publish bundle까지 자동으로 다시 생성·검증합니다.
+publish는 단일 실행 lock을 잡고 staging 디렉터리에서 전체 bundle 검증을 마친 뒤 `public/`과 manifest를 교체합니다. 잘못된 spec, symlink 경로 탈출, 누락 파일로 실패하면 기존 카탈로그와 배포 bundle은 그대로 유지됩니다. 프로세스가 교체 중 중단되면 다음 publish가 남은 backup과 manifest/catalog 일치 여부를 확인해 자동 복구합니다.
 
 ## 재배포
 
@@ -46,6 +47,7 @@ npm run build
 ```
 
 정적 호스팅의 publish directory는 `public/`입니다. `_headers`를 지원하는 호스팅에서는 CSP, referrer, permissions, cache 정책도 같이 반영됩니다. GitHub Pages처럼 `_headers`를 해석하지 않는 호스팅에서도 HTML meta CSP는 유지됩니다.
+현재 GitHub Pages 배포에서는 `_headers`의 응답 헤더가 적용되지 않으므로 `frame-ancestors`와 세밀한 cache header는 호스팅 경계입니다. 실제 게임 격리는 meta CSP와 `sandbox`/same-origin 차단으로 유지됩니다.
 
 ## 실행 경계
 

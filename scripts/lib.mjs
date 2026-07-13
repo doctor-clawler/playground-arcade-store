@@ -1,4 +1,4 @@
-import { readFile, stat } from "node:fs/promises";
+import { lstat, readFile, realpath } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -26,10 +26,18 @@ export function resolveInside(root, relativePath, label = "path") {
 }
 
 export async function assertRegularFile(filePath, label = filePath) {
-  const info = await stat(filePath);
+  const info = await lstat(filePath);
   if (!info.isFile() || info.isSymbolicLink()) {
     throw new Error(`${label} must be a regular file`);
   }
+}
+
+export async function assertRealPathInside(root, target, label = "path") {
+  const [realRoot, realTarget] = await Promise.all([realpath(root), realpath(target)]);
+  if (realTarget !== realRoot && !realTarget.startsWith(`${realRoot}${path.sep}`)) {
+    throw new Error(`${label} escapes allowed root through a symlink`);
+  }
+  return realTarget;
 }
 
 export function publicGame(game) {

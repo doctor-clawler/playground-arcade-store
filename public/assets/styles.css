@@ -4,7 +4,7 @@
   --paper-deep: #e7e0d2;
   --ink: #171713;
   --muted: #66645d;
-  --acid: #ff5c46;
+  --acid: #c5352b;
   --lime: #c8ff43;
   --line: rgba(23, 23, 19, 0.24);
   --header-height: 78px;
@@ -216,9 +216,10 @@ img { display: block; max-width: 100%; }
 .search-box > span { font-size: 1.4rem; }
 .search-box input { width: 100%; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 0.92rem; }
 .search-box input::placeholder { color: #8b887f; }
+.search-box input::-webkit-search-cancel-button { filter: grayscale(1) contrast(2); opacity: 0.65; }
 .genre-filters { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; }
 .filter-button {
-  min-height: 38px;
+  min-height: 44px;
   padding: 0 14px;
   border: 1px solid transparent;
   background: transparent;
@@ -378,7 +379,12 @@ img { display: block; max-width: 100%; }
   .detail-view { padding-inline: 14px; }
   .detail-intro { padding-top: 46px; }
   .detail-title-block h1 { font-size: clamp(4rem, 19vw, 5.8rem); }
-  .player-shell, .frame-host, .frame-host iframe { min-height: 76svh; }
+  .player-shell, .frame-host, .frame-host iframe { min-height: 79svh; }
+  .player-shell[data-orientation="portrait"],
+  .player-shell[data-orientation="portrait"] .frame-host,
+  .player-shell[data-orientation="portrait"] .frame-host iframe {
+    min-height: calc((100vw - 28px) * 844 / 390);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
