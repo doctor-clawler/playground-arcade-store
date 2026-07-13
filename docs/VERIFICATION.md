@@ -44,3 +44,9 @@ Screenshots were opened and visually inspected. No overlap, clipping, horizontal
 - LAN: `http://192.168.219.121:18035/` — HTTP response verified
 - Tailscale: `http://100.111.114.76:18035/` — HTTP response verified, private tailnet only
 - Durable session: `ops-web-preview-playground`
+
+## Public deployment
+
+- GitHub Pages: `https://doctor-clawler.github.io/playground-arcade-store/`
+- HTTPS root, tooth game entry, and merge game bundle returned HTTP 200 after the Pages workflow completed.
+- Repository: `https://github.com/doctor-clawler/playground-arcade-store`
