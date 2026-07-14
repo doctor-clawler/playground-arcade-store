@@ -1,6 +1,6 @@
 # PLAY//GROUND
 
-Slack `#놀이터`에서 완성된 브라우저 게임만 선별해 실행하는 정적 웹게임 스토어입니다. 홈/검색/장르 필터/상세/iframe 플레이어/전체화면/provenance를 제공하며, 게임 번들과 스토어 런타임을 분리합니다.
+Slack `#놀이터`에서 완성된 브라우저 게임만 선별해 실행하는 정적 웹게임 스토어입니다. 카탈로그/검색/장르 필터/최소 상세/모바일 조작 안내/sandbox iframe 플레이어를 제공하며, 모바일에서는 플레이와 동시에 전체화면을 요청합니다.
 
 ## 현재 카탈로그
 
@@ -30,7 +30,7 @@ npm run validate
 
 ## 새 게임 추가
 
-1. `docs/game-spec.example.json`을 복사해 실제 값과 Slack provenance를 채웁니다.
+1. `docs/game-spec.example.json`을 복사해 실제 값, 모바일 조작법, 내부 Slack provenance를 채웁니다.
 2. 실행합니다.
 
 ```bash
@@ -52,6 +52,7 @@ npm run build
 ## 실행 경계
 
 - 스토어는 `public/index.html`과 `public/assets/`에서 동작합니다.
+- Slack URL, 작성자, artifact ID, 로컬 경로는 내부 manifest/docs에만 보존하고 공개 catalog와 사용자 UI에는 내보내지 않습니다.
 - 각 게임은 `public/games/<id>/` 아래 독립 번들입니다.
 - iframe은 `sandbox="allow-scripts allow-pointer-lock"`, `referrerpolicy="no-referrer"`, 명시적 fullscreen 권한으로 실행됩니다. same-origin 권한은 주지 않습니다.
 - 게임 URL과 썸네일에는 manifest version query가 붙습니다.

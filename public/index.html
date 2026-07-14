@@ -8,44 +8,19 @@
     <meta name="description" content="#놀이터에서 완성된 브라우저 게임을 모아 바로 플레이하는 독립 아케이드 스토어">
     <title>PLAY//GROUND — 놀이터 아케이드</title>
     <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="./assets/styles.css?v=2026.07.14.2">
+    <link rel="stylesheet" href="./assets/styles.css?v=2026.07.14.3">
   </head>
   <body>
     <a class="skip-link" href="#catalog">게임 목록으로 건너뛰기</a>
 
-    <header class="site-header" data-testid="site-header">
-      <a class="brand" href="#home" aria-label="PLAY GROUND 홈">
-        <span>PLAY</span><span class="brand-slash">//</span><span>GROUND</span>
-      </a>
-      <div class="header-meta">
-        <span class="live-dot" aria-hidden="true"></span>
-        <span>3 GAMES · BROWSER READY</span>
-      </div>
-    </header>
-
     <main>
       <div id="home-view" data-view="home">
-        <section id="hero" class="hero" aria-labelledby="hero-title">
-          <img id="hero-image" class="hero-image" alt="">
-          <div class="hero-scrim" aria-hidden="true"></div>
-          <div class="hero-copy">
-            <p class="eyebrow">#놀이터에서 살아남은 게임들</p>
-            <h1 id="hero-title">작은 아이디어를<br>진짜 플레이로.</h1>
-            <p id="hero-description" class="hero-description"></p>
-            <button id="hero-play" class="button button-primary" type="button" data-testid="hero-play">
-              대표작 플레이 <span aria-hidden="true">↗</span>
-            </button>
-          </div>
-          <div class="hero-index" aria-label="카탈로그 수">03<span>/03</span></div>
-        </section>
-
         <section id="catalog" class="catalog-section" aria-labelledby="catalog-title">
           <div class="catalog-head">
             <div>
               <p class="section-number">01 — CATALOG</p>
               <h2 id="catalog-title">오늘 뭐 하고 놀까?</h2>
             </div>
-            <p class="catalog-note">원문과 실행 증거가 확인된 게임만 전시합니다.</p>
           </div>
 
           <div class="catalog-tools" role="search">
@@ -65,41 +40,26 @@
             <button id="reset-search" class="text-button" type="button">필터 초기화</button>
           </div>
         </section>
-
-        <section class="manifest-story" aria-labelledby="manifest-title">
-          <div>
-            <p class="section-number">02 — HOW IT WORKS</p>
-            <h2 id="manifest-title">글이 아니라<br>플레이가 기준.</h2>
-          </div>
-          <ol class="manifest-list">
-            <li><span>01</span><strong>선별</strong><p>원문 스레드와 실행 가능한 정적 번들을 함께 확인합니다.</p></li>
-            <li><span>02</span><strong>격리</strong><p>게임은 버전 경로와 sandbox iframe 안에서 실행됩니다.</p></li>
-            <li><span>03</span><strong>검증</strong><p>데스크톱과 모바일에서 직접 플레이한 게임만 공개합니다.</p></li>
-          </ol>
-        </section>
       </div>
 
       <section id="detail-view" class="detail-view" data-view="detail" hidden aria-labelledby="detail-title" data-testid="detail-view">
         <div class="detail-topbar">
           <button id="back-button" class="back-button" type="button" data-testid="back-button">← 카탈로그</button>
-          <span id="detail-position">01 / 03</span>
         </div>
 
         <div class="detail-intro">
           <div class="detail-title-block">
-            <p id="detail-edition" class="eyebrow"></p>
             <h1 id="detail-title"></h1>
             <p id="detail-description" class="detail-description"></p>
-            <div id="detail-tags" class="detail-tags"></div>
           </div>
-          <dl id="detail-facts" class="detail-facts"></dl>
         </div>
 
         <div id="player-shell" class="player-shell" data-state="idle" data-testid="player-shell">
+          <button id="exit-mobile-player" class="mobile-player-close" type="button" aria-label="게임 전체화면 닫기">×</button>
           <div id="player-poster" class="player-poster">
             <img id="player-poster-image" alt="">
             <div class="player-poster-copy">
-              <span>PLAY IN BROWSER</span>
+              <span id="player-start-hint">게임 시작</span>
               <button id="start-game" class="play-disc" type="button" aria-label="게임 시작" data-testid="start-game">▶</button>
             </div>
           </div>
@@ -125,14 +85,9 @@
 
         <div class="detail-lower">
           <section aria-labelledby="controls-title">
-            <p class="section-number">CONTROLS</p>
-            <h2 id="controls-title">조작법</h2>
+            <p class="section-number">TOUCH CONTROLS</p>
+            <h2 id="controls-title">모바일 조작</h2>
             <ul id="controls-list" class="controls-list"></ul>
-          </section>
-          <section aria-labelledby="source-title">
-            <p class="section-number">PROVENANCE</p>
-            <h2 id="source-title">만든 기록</h2>
-            <dl id="source-list" class="source-list"></dl>
           </section>
         </div>
       </section>
@@ -140,17 +95,12 @@
       <section id="not-found-view" class="not-found" hidden data-view="not-found">
         <span>404</span>
         <h1>이 게임은 진열대에 없어요.</h1>
-        <p>주소가 바뀌었거나 아직 검증되지 않은 게임일 수 있습니다.</p>
+        <p>주소가 바뀌었거나 현재 제공하지 않는 게임입니다.</p>
         <a class="button button-primary" href="#home">카탈로그로 돌아가기</a>
       </section>
     </main>
 
-    <footer class="site-footer">
-      <span>PLAY//GROUND</span>
-      <p>Built from #놀이터 · Catalog <span id="catalog-version">—</span></p>
-    </footer>
-
-    <script src="./catalog.js?v=2026.07.14.2"></script>
-    <script src="./assets/app.js?v=2026.07.14.2"></script>
+    <script src="./catalog.js?v=2026.07.14.3"></script>
+    <script src="./assets/app.js?v=2026.07.14.3"></script>
   </body>
 </html>

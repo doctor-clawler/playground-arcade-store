@@ -9,7 +9,7 @@ if (specFlag < 0 || !process.argv[specFlag + 1]) {
 
 const spec = JSON.parse(await readFile(process.argv[specFlag + 1], "utf8"));
 assertSafeId(spec.id);
-const required = ["title", "version", "genre", "sourcePath", "bundleFiles", "entry", "thumbnailSource", "shortDescription", "description", "controls", "provenance"];
+const required = ["title", "version", "genre", "sourcePath", "bundleFiles", "entry", "thumbnailSource", "shortDescription", "description", "mobileControls", "provenance"];
 for (const field of required) if (spec[field] == null) throw new Error(`Missing required field: ${field}`);
 
 const manifest = await readManifest();

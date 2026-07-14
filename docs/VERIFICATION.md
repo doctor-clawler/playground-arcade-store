@@ -5,7 +5,7 @@ Date: 2026-07-14 KST
 ## Static and source checks
 
 ```text
-npm run build     PASS — 3 games, catalog 2026.07.14.2
+npm run build     PASS — 3 games, catalog 2026.07.14.3
 npm test          PASS — 8/8 store/publish safety tests
 npm run validate  PASS — 3 game bundles, CSP/bridge/resources present
 tooth-runner      PASS — 4/4 core tests
@@ -20,7 +20,10 @@ magic candy       PASS — node --check game.js
 - 스파게티 머지: iframe 플레이어 ready, 장바구니 클릭 후 1번 칸 밀가루 생성.
 - 기묘한 과자점: 제조→스티커→판매 흐름, `coins=42`, `sales=1`, 다음 손님 갱신.
 - Store desktop 1440×1000: 홈→퍼즐 필터→상세→플레이→게임 클릭→전체화면 진입. `document.fullscreenElement`는 game iframe.
-- Store mobile 390×844: 홈/상세/플레이 ready, horizontal overflow false, 장르 filter 44px.
+- Store mobile 390×844: 카탈로그 전용 홈/최소 상세/플레이 ready, horizontal overflow false, 장르 filter 44px.
+- 모바일 플레이 버튼: `fullscreenElement=#player-shell`, immersive class/body lock true. 닫기 후 fullscreen/class/body lock 모두 false.
+- 데스크톱 플레이 버튼: 자동 fullscreen/class 적용 안 됨.
+- 공개 catalog: provenance, Slack URL, artifact ID, local path 없음.
 - Portrait player: iframe 783px, inner document/body 783px로 일치해 세로 게임 하단 잘림 없음.
 - Search: `과자` 검색 시 기묘한 과자점만 남음.
 - 404: 없는 game id는 전용 오류 화면으로 라우팅.
@@ -48,6 +51,6 @@ Screenshots were opened and visually inspected. No overlap, clipping, horizontal
 
 ## Public deployment
 
-- GitHub Pages: `https://doctor-clawler.github.io/playground-arcade-store/` (catalog `2026.07.14.2`)
+- GitHub Pages: `https://doctor-clawler.github.io/playground-arcade-store/` (catalog `2026.07.14.3`)
 - HTTPS root, tooth game entry, and merge game bundle returned HTTP 200 after the Pages workflow completed.
 - Repository: `https://github.com/doctor-clawler/playground-arcade-store`

@@ -1,116 +1,66 @@
 {
-  "version": "2026.07.14.2",
+  "version": "2026.07.14.3",
   "games": [
     {
       "id": "tooth-runner",
       "title": "이빨 피하기",
-      "edition": "Survival Edition",
-      "version": "0.1.0",
-      "featured": true,
       "genre": "액션",
       "tags": [
         "생존",
         "회피",
         "상점"
       ],
-      "players": "1인",
       "orientation": "가로",
       "entryUrl": "./games/tooth-runner/index.html?v=0.1.0",
       "thumbnailUrl": "./assets/thumb-tooth-runner.png?v=0.1.0",
       "shortDescription": "60초 동안 거대한 이빨을 피해 살아남으세요.",
       "description": "추격하는 이빨을 피하고 망치를 주워 반격하는 짧고 선명한 생존 게임입니다. 생존 보상으로 상점 아이템을 해금할 수 있습니다.",
-      "controls": [
-        "WASD / 방향키 — 이동",
-        "화면 아래 망치 — 획득",
-        "공격 버튼 / Space — 공격",
-        "F — 전체화면"
-      ],
-      "accent": "#ff5c46",
-      "ink": "#1d2a3d",
-      "provenance": {
-        "channel": "#놀이터",
-        "channelId": "C0B07FH4M3R",
-        "threadTs": "1782631822.044179",
-        "threadUrl": "https://mibcompany.slack.com/archives/C0B07FH4M3R/p1782631822044179?thread_ts=1782631822.044179&cid=C0B07FH4M3R",
-        "author": "지렁이",
-        "artifactId": "F0BDPD8GJM8",
-        "artifactTitle": "shot-2.png",
-        "localSource": "../tooth-runner"
-      }
+      "mobileControls": [
+        "게임 시작 버튼을 탭하세요.",
+        "게임 화면을 누른 채 드래그해 이동하세요.",
+        "망치에 닿아 획득한 뒤 공격 버튼을 탭하세요."
+      ]
     },
     {
       "id": "merge-restaurant",
       "title": "스파게티 머지",
-      "edition": "Restaurant Board",
-      "version": "0.1.0",
-      "featured": false,
       "genre": "퍼즐",
       "tags": [
         "머지",
         "요리",
         "캐주얼"
       ],
-      "players": "1인",
       "orientation": "세로",
       "entryUrl": "./games/merge-restaurant/index.html?v=0.1.0",
       "thumbnailUrl": "./assets/thumb-merge-restaurant.png?v=0.1.0",
       "shortDescription": "같은 재료를 합쳐 손님의 주문을 완성하세요.",
       "description": "7×7 작업대에서 밀가루를 꺼내 합치고, 서로 다른 주문을 맞춰 서빙하는 모바일 퍼즐입니다. 드래그와 두 번 탭을 모두 지원합니다.",
-      "controls": [
-        "장바구니 — 밀가루 생성",
-        "같은 재료 두 번 탭 — 합치기",
-        "같은 재료 위로 드래그 — 합치기",
-        "손님 — 완성 요리 서빙"
-      ],
-      "accent": "#d94b38",
-      "ink": "#231f1a",
-      "provenance": {
-        "channel": "#놀이터",
-        "channelId": "C0B07FH4M3R",
-        "threadTs": "1781944250.863389",
-        "threadUrl": "https://mibcompany.slack.com/archives/C0B07FH4M3R/p1781944250863389?thread_ts=1781944250.863389&cid=C0B07FH4M3R",
-        "author": "지렁이",
-        "artifactId": null,
-        "artifactTitle": "local playable bundle",
-        "localSource": "../mystic-snack-tycoon"
-      }
+      "mobileControls": [
+        "장바구니를 탭해 재료를 꺼내세요.",
+        "같은 재료를 두 번 탭하거나 서로 겹치게 드래그하세요.",
+        "완성된 요리와 주문이 같은 손님을 탭해 서빙하세요."
+      ]
     },
     {
       "id": "mystic-candy-shop",
       "title": "기묘한 과자점",
-      "edition": "Magic Tycoon",
-      "version": "0.1.0",
-      "featured": false,
       "genre": "타이쿤",
       "tags": [
         "경영",
         "제작",
         "스토리"
       ],
-      "players": "1인",
       "orientation": "세로",
       "entryUrl": "./games/mystic-candy-shop/index.html?v=0.1.0",
       "thumbnailUrl": "./assets/thumb-mystic-candy-shop.png?v=0.1.0",
       "shortDescription": "재료를 모아 고민을 해결하는 마법 과자를 만드세요.",
       "description": "정원 채집, 솥 제작, 주의사항 스티커, 손님 판매가 한 흐름으로 이어지는 세로형 상점 타이쿤입니다. 원본 기획의 분위기만 참고한 독자 IP입니다.",
-      "controls": [
-        "화면 버튼 — 메뉴 이동",
-        "정원 재료 — 탭해서 채집",
-        "솥 — 드래그해서 젓기",
-        "과자와 스티커 — 탭해서 선택"
-      ],
-      "accent": "#f2bd56",
-      "ink": "#3c211a",
-      "provenance": {
-        "channel": "#놀이터",
-        "channelId": "C0B07FH4M3R",
-        "threadTs": "1781943705.366939",
-        "threadUrl": "https://mibcompany.slack.com/archives/C0B07FH4M3R/p1781943705366939?thread_ts=1781943705.366939&cid=C0B07FH4M3R",
-        "author": "지렁이",
-        "artifactId": "F0BC0CUA29F",
-        "artifactTitle": "타이쿤이 좋겠어.PDF",
-        "localSource": "../magic-candy-tycoon-mobile-20260620"
-      }
+      "mobileControls": [
+        "하단 메뉴와 항목은 탭해서 선택하세요.",
+        "정원에서는 재료를 탭하거나 손가락으로 문질러 채집하세요.",
+        "제조 화면의 솥은 손가락으로 원을 그리며 저으세요.",
+        "과자와 주의사항 스티커를 탭해 손님에게 판매하세요."
+      ]
     }
   ]
 }

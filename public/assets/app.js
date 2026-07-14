@@ -33,15 +33,6 @@
     document.body.dataset.view = name;
   }
 
-  function setHero() {
-    const featured = games.find((game) => game.featured) || games[0];
-    if (!featured) return;
-    $("#hero-image").src = featured.thumbnailUrl;
-    $("#hero-image").alt = `${featured.title} 게임 화면`;
-    $("#hero-description").textContent = featured.shortDescription;
-    $("#hero-play").addEventListener("click", () => { window.location.hash = `game/${featured.id}`; });
-  }
-
   function renderFilters() {
     const genres = ["전체", ...new Set(games.map((game) => game.genre))];
     filterHost.innerHTML = genres.map((genre) => `
@@ -60,7 +51,7 @@
     const query = state.query.trim().toLocaleLowerCase("ko");
     return games.filter((game) => {
       const genreMatch = state.genre === "전체" || game.genre === state.genre;
-      const haystack = [game.title, game.edition, game.genre, game.shortDescription, ...game.tags].join(" ").toLocaleLowerCase("ko");
+      const haystack = [game.title, game.genre, game.shortDescription, ...game.tags].join(" ").toLocaleLowerCase("ko");
       return genreMatch && (!query || haystack.includes(query));
     });
   }
@@ -87,8 +78,39 @@
     });
   }
 
-  function resetPlayer() {
+  function isMobilePlayViewport() {
+    return window.matchMedia("(max-width: 800px), (pointer: coarse)").matches;
+  }
+
+  function exitMobilePlayMode() {
+    playerShell.classList.remove("is-mobile-play");
+    document.body.classList.remove("mobile-play-active");
+    try { window.screen.orientation?.unlock?.(); } catch { /* unsupported */ }
+    if (document.fullscreenElement === playerShell) document.exitFullscreen().catch(() => {});
+  }
+
+  function enterMobilePlayMode(game) {
+    if (!isMobilePlayViewport()) return;
+    playerShell.classList.add("is-mobile-play");
+    document.body.classList.add("mobile-play-active");
+    if (document.fullscreenElement) return;
+
+    const requestFullscreen = playerShell.requestFullscreen || playerShell.webkitRequestFullscreen;
+    if (!requestFullscreen) return;
+    try {
+      const request = requestFullscreen.call(playerShell, { navigationUI: "hide" });
+      Promise.resolve(request).then(() => {
+        const orientation = game.orientation === "가로" ? "landscape" : "portrait";
+        return window.screen.orientation?.lock?.(orientation);
+      }).catch(() => {});
+    } catch {
+      // CSS immersive mode remains active when the Fullscreen API is unavailable.
+    }
+  }
+
+  function resetPlayer({ keepMobileMode = false } = {}) {
     clearTimeout(state.loadTimer);
+    if (!keepMobileMode) exitMobilePlayMode();
     frameHost.replaceChildren();
     frameHost.hidden = true;
     playerPoster.hidden = false;
@@ -104,30 +126,18 @@
     state.currentGame = game;
     playerShell.dataset.orientation = game.orientation === "세로" ? "portrait" : "landscape";
     resetPlayer();
-    $("#detail-position").textContent = `${String(games.indexOf(game) + 1).padStart(2, "0")} / ${String(games.length).padStart(2, "0")}`;
-    $("#detail-edition").textContent = `${game.genre} — ${game.edition}`;
     $("#detail-title").textContent = game.title;
     $("#detail-description").textContent = game.description;
-    $("#detail-tags").innerHTML = game.tags.map((tag) => `<span>#${escapeHtml(tag)}</span>`).join("");
-    $("#detail-facts").innerHTML = [
-      ["VERSION", game.version], ["PLAYERS", game.players], ["VIEW", game.orientation], ["FORMAT", "HTML5"]
-    ].map(([term, value]) => `<div><dt>${term}</dt><dd>${escapeHtml(value)}</dd></div>`).join("");
     $("#player-poster-image").src = game.thumbnailUrl;
     $("#player-poster-image").alt = `${game.title} 게임 시작 화면`;
-    $("#controls-list").innerHTML = game.controls.map((control) => `<li>${escapeHtml(control)}</li>`).join("");
-    const provenance = game.provenance;
-    $("#source-list").innerHTML = `
-      <div><dt>원문</dt><dd><a href="${escapeHtml(provenance.threadUrl)}" target="_blank" rel="noreferrer">${escapeHtml(provenance.channel)} thread ↗</a></dd></div>
-      <div><dt>작성자</dt><dd>${escapeHtml(provenance.author)}</dd></div>
-      <div><dt>원본</dt><dd>${escapeHtml(provenance.artifactTitle || "local playable bundle")}</dd></div>
-      <div><dt>번들</dt><dd>${escapeHtml(provenance.localSource)}</dd></div>
-    `;
+    $("#player-start-hint").textContent = isMobilePlayViewport() ? "탭하면 전체화면으로 시작합니다" : "바로 플레이";
+    $("#controls-list").innerHTML = game.mobileControls.map((control) => `<li>${escapeHtml(control)}</li>`).join("");
   }
 
   function startGame() {
     const game = state.currentGame;
     if (!game) return;
-    resetPlayer();
+    resetPlayer({ keepMobileMode: true });
     playerPoster.hidden = true;
     playerLoading.hidden = false;
     playerShell.dataset.state = "loading";
@@ -141,6 +151,7 @@
     iframe.setAttribute("referrerpolicy", "no-referrer");
     iframe.setAttribute("data-testid", "game-frame");
     frameHost.append(iframe);
+    enterMobilePlayMode(game);
 
     state.loadTimer = window.setTimeout(() => showPlayerError("게임 준비 신호를 받지 못했습니다. 정적 번들을 다시 검증해 주세요."), 12000);
   }
@@ -153,7 +164,7 @@
     playerShell.dataset.state = "ready";
     $("#reload-game").disabled = false;
     $("#fullscreen-game").disabled = false;
-    $("#player-label").textContent = `${state.currentGame.title} 실행 중 · F 키 또는 전체화면 버튼`;
+    $("#player-label").textContent = isMobilePlayViewport() ? `${state.currentGame.title} 실행 중` : `${state.currentGame.title} 실행 중 · 전체화면 버튼 사용 가능`;
   }
 
   function showPlayerError(message) {
@@ -164,6 +175,7 @@
     playerShell.dataset.state = "error";
     $("#player-error-message").textContent = message;
     $("#player-label").textContent = "게임 실행 오류";
+    exitMobilePlayMode();
   }
 
   function route() {
@@ -203,9 +215,14 @@
   $("#start-game").addEventListener("click", startGame);
   $("#retry-game").addEventListener("click", startGame);
   $("#reload-game").addEventListener("click", startGame);
+  $("#exit-mobile-player").addEventListener("click", exitMobilePlayMode);
   $("#fullscreen-game").addEventListener("click", async () => {
     const iframe = frameHost.querySelector("iframe");
     if (!iframe) return;
+    if (isMobilePlayViewport()) {
+      enterMobilePlayMode(state.currentGame);
+      return;
+    }
     try { await iframe.requestFullscreen(); } catch { showPlayerError("이 브라우저에서 전체화면을 시작할 수 없습니다."); }
   });
   window.addEventListener("message", (event) => {
@@ -215,6 +232,12 @@
     if (event.data.type === "error") showPlayerError(event.data.detail?.message || "게임 내부 오류가 발생했습니다.");
   });
   window.addEventListener("hashchange", route);
+  document.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement) {
+      playerShell.classList.remove("is-mobile-play");
+      document.body.classList.remove("mobile-play-active");
+    }
+  });
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !detailView.hidden && !document.fullscreenElement) window.location.hash = "home";
   });
@@ -223,8 +246,6 @@
     gameGrid.innerHTML = "<p>카탈로그를 불러오지 못했습니다.</p>";
     return;
   }
-  $("#catalog-version").textContent = catalog.version;
-  setHero();
   renderFilters();
   renderCatalog();
   route();

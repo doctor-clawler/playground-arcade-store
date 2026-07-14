@@ -44,20 +44,13 @@ export function publicGame(game) {
   return {
     id: game.id,
     title: game.title,
-    edition: game.edition,
-    version: game.version,
-    featured: game.featured,
     genre: game.genre,
     tags: game.tags,
-    players: game.players,
     orientation: game.orientation,
     entryUrl: `./games/${game.id}/${game.entry}?v=${encodeURIComponent(game.version)}`,
     thumbnailUrl: `./assets/thumb-${game.id}.png?v=${encodeURIComponent(game.version)}`,
     shortDescription: game.shortDescription,
     description: game.description,
-    controls: game.controls,
-    accent: game.accent,
-    ink: game.ink,
-    provenance: game.provenance
+    mobileControls: game.mobileControls
   };
 }

@@ -16,18 +16,26 @@ test("manifest registers three unique playable games", async () => {
     await access(resolveInside(playgroundRoot, game.thumbnailSource));
     assert.match(game.provenance.threadUrl, /^https:\/\/mibcompany\.slack\.com\/archives\/C0B07FH4M3R\//);
     assert.ok(game.controls.length >= 3);
+    assert.ok(game.mobileControls.length >= 3);
   }
 });
 
 test("store shell declares the security and runtime boundaries", async () => {
   const html = await readFile(path.join(projectRoot, "public", "index.html"), "utf8");
   const app = await readFile(path.join(projectRoot, "public", "assets", "app.js"), "utf8");
+  const catalog = await readFile(path.join(projectRoot, "public", "catalog.json"), "utf8");
   assert.match(html, /Content-Security-Policy/);
+  assert.match(html, /오늘 뭐 하고 놀까/);
+  assert.match(html, /모바일 조작/);
+  assert.doesNotMatch(html, /만든 기록|HOW IT WORKS|hero-play|detail-facts/);
   assert.match(app, /sandbox.*allow-scripts allow-pointer-lock/);
   assert.doesNotMatch(app, /allow-same-origin/);
   assert.match(app, /requestFullscreen/);
+  assert.match(app, /enterMobilePlayMode\(game\)/);
   assert.match(app, /showPlayerError/);
   assert.match(app, /dataset\.orientation/);
+  assert.doesNotMatch(app, /provenance|source-list/);
+  assert.doesNotMatch(catalog, /provenance|threadUrl|artifactId|localSource/);
 });
 
 test("path resolver fails closed on parent traversal", () => {

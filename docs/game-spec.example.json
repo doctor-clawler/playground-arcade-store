@@ -15,6 +15,7 @@
   "shortDescription": "한 줄 설명",
   "description": "상세 설명",
   "controls": ["방향키 — 이동", "Space — 행동", "F — 전체화면"],
+  "mobileControls": ["화면을 드래그해 이동", "버튼을 탭해 행동", "두 손가락을 쓰지 않아도 플레이 가능"],
   "accent": "#ff5c46",
   "ink": "#171713",
   "provenance": {
