@@ -34,7 +34,11 @@ export async function validateBuild({ root = publicRoot, manifest: manifestOverr
 
     for (const match of html.matchAll(localAssetPattern)) {
       const ref = match[1];
-      if (/^(data:|mailto:|javascript:|\/)/i.test(ref)) continue;
+      if (ref.startsWith("/")) {
+        failures.push(`${game.id}: root-relative asset escapes game bundle ${ref}`);
+        continue;
+      }
+      if (/^(data:|mailto:|javascript:)/i.test(ref)) continue;
       const target = resolveInside(gameRoot, ref, `${game.id} referenced asset`);
       try {
         await access(target);

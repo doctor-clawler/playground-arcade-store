@@ -1,7 +1,9 @@
 const __storeMemory = new Map();
 const safeStorage = {
   getItem(key) { try { return window.localStorage.getItem(key); } catch { return __storeMemory.get(key) ?? null; } },
-  setItem(key, value) { try { window.localStorage.setItem(key, value); } catch { __storeMemory.set(key, String(value)); } }
+  setItem(key, value) { try { window.localStorage.setItem(key, value); } catch { __storeMemory.set(key, String(value)); } },
+  removeItem(key) { try { window.localStorage.removeItem(key); } catch { __storeMemory.delete(key); } },
+  clear() { try { window.localStorage.clear(); } catch { __storeMemory.clear(); } }
 };
 
 const ITEM_DEFS = {

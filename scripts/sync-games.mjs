@@ -18,12 +18,41 @@ const allowedExtensions = new Set([".html", ".css", ".js", ".mjs", ".json", ".pn
 const bridge = `\n<script src="./store-bridge.js"></script>\n`;
 const csp = `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src http: https:; style-src http: https: 'unsafe-inline'; img-src http: https: data:; font-src http: https:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">`;
 const bridgeSource = `(() => {\n  const send = (type, detail = {}) => {\n    if (window.parent !== window) window.parent.postMessage({ source: "playground-game", type, detail }, "*");\n  };\n  window.addEventListener("load", () => send("ready", { title: document.title }));\n  window.addEventListener("error", (event) => send("error", { message: event.message || "게임 리소스 오류" }));\n  window.addEventListener("unhandledrejection", (event) => send("error", { message: String(event.reason || "게임 실행 오류") }));\n  document.addEventListener("keydown", (event) => {\n    if (event.key.toLowerCase() === "f") {\n      event.preventDefault();\n      if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();\n      else document.exitFullscreen?.();\n    }\n  });\n})();\n`;
-const storageFallback = `const __storeMemory = new Map();\nconst safeStorage = {\n  getItem(key) { try { return window.localStorage.getItem(key); } catch { return __storeMemory.get(key) ?? null; } },\n  setItem(key, value) { try { window.localStorage.setItem(key, value); } catch { __storeMemory.set(key, String(value)); } }\n};\n`;
+const storageFallback = `const __storeMemory = new Map();\nconst safeStorage = {\n  getItem(key) { try { return window.localStorage.getItem(key); } catch { return __storeMemory.get(key) ?? null; } },\n  setItem(key, value) { try { window.localStorage.setItem(key, value); } catch { __storeMemory.set(key, String(value)); } },\n  removeItem(key) { try { window.localStorage.removeItem(key); } catch { __storeMemory.delete(key); } },\n  clear() { try { window.localStorage.clear(); } catch { __storeMemory.clear(); } }\n};\n`;
 
 function stripModuleSyntax(source) {
   return source
     .replace(/import\s*\{[\s\S]*?\}\s*from\s*["'][^"']+["'];?\s*/g, "")
     .replace(/\bexport\s+(?=(?:const|let|var|function|class)\b)/g, "");
+}
+
+function replaceScript(html, sourcePath, replacement, { moduleOnly = false } = {}) {
+  let replaced = false;
+  const next = html.replace(/<script\b([^>]*)\bsrc=["']([^"']+)["']([^>]*)><\/script>/gi, (tag, before, src, after) => {
+    if (src !== sourcePath || (moduleOnly && !/\btype=["']module["']/i.test(`${before} ${after}`))) return tag;
+    replaced = true;
+    return replacement;
+  });
+  if (!replaced) throw new Error(`Script not found in entry: ${sourcePath}`);
+  return next;
+}
+
+function normalizeRootRelativeAssets(html) {
+  return html.replace(/\b(src|href)=(['"])\/(?!\/)/gi, "$1=$2./");
+}
+
+function inlineStylesheet(html, sourcePath, css) {
+  const normalizedSource = sourcePath.replace(/^\.\//, "").replace(/^\//, "");
+  const selfContainedCss = css.replace(/@import\s+(?:url\()?['"]?https?:\/\/[^;]+;/gi, "");
+  let replaced = false;
+  const next = html.replace(/<link\b([^>]*)\bhref=["']([^"']+)["']([^>]*)>/gi, (tag, before, href) => {
+    const normalizedHref = href.replace(/^\.\//, "").replace(/^\//, "");
+    if (normalizedHref !== normalizedSource || !/\brel=["']stylesheet["']/i.test(before)) return tag;
+    replaced = true;
+    return `<style>\n${selfContainedCss}\n</style>`;
+  });
+  if (!replaced) throw new Error(`Stylesheet not found in entry: ${sourcePath}`);
+  return next;
 }
 
 async function pathExists(target) {
@@ -200,13 +229,24 @@ export async function syncGames({ manifest: manifestOverride, persistManifest = 
         }
         let bundle = parts.join("\n\n");
         if (game.classicBundle.storageFallback) {
-          bundle = `${storageFallback}\n${bundle.replaceAll("localStorage.", "safeStorage.")}`;
+          bundle = `${storageFallback}\n${bundle.replace(/\b(?:window\.)?localStorage\b/g, "safeStorage")}`;
         }
         const bundleOutput = resolveInside(destinationRoot, game.classicBundle.output, `${game.id} classic output`);
         await writeFile(bundleOutput, bundle);
-        const escapedScript = game.classicBundle.replaceScript.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        html = html.replace(new RegExp(`<script\\s+type=["']module["']\\s+src=["']${escapedScript}["']\\s*><\\/script>`, "i"), `<script src="./${game.classicBundle.output}"></script>`);
+        if (game.classicBundle.replaceScripts) {
+          for (const [index, sourcePath] of game.classicBundle.replaceScripts.entries()) {
+            html = replaceScript(html, sourcePath, index === 0 ? `<script defer src="./${game.classicBundle.output}"></script>` : "");
+          }
+        } else {
+          html = replaceScript(html, game.classicBundle.replaceScript, `<script defer src="./${game.classicBundle.output}"></script>`, { moduleOnly: true });
+        }
       }
+      for (const stylesheet of game.inlineStyles ?? []) {
+        const stylesheetPath = resolveInside(sourceRoot, stylesheet, `${game.id} inline stylesheet`);
+        await assertRealPathInside(sourceRoot, stylesheetPath, `${game.id} inline stylesheet`);
+        html = inlineStylesheet(html, stylesheet, await readFile(stylesheetPath, "utf8"));
+      }
+      if (game.normalizeRootRelativeAssets) html = normalizeRootRelativeAssets(html);
       if (!html.includes("Content-Security-Policy")) html = html.replace(/<head([^>]*)>/i, `<head$1>\n    ${csp}`);
       if (!html.includes("store-bridge.js")) html = html.replace(/<\/body>/i, `${bridge}</body>`);
       await writeFile(entryFile, html);

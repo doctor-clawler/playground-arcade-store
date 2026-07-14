@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src http: https:; style-src http: https: 'unsafe-inline'; img-src http: https: data:; font-src http: https:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f6f0e8" />
+    <title>캐릭터 꾸미기</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="game-shell">
+      <canvas
+        id="game"
+        width="1080"
+        height="720"
+        aria-label="캐릭터를 꾸미고 저장하는 게임"
+        role="application"
+      ></canvas>
+      <p id="game-status" class="sr-only" aria-live="polite"></p>
+    </main>
+    <script defer src="./game.bundle.js"></script>
+  
+<script src="./store-bridge.js"></script>
+</body>
+</html>
