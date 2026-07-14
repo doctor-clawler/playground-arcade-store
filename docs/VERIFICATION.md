@@ -72,5 +72,7 @@ Screenshots were opened and visually inspected. No overlap, clipping, horizontal
 
 ## Public deployment
 
-- GitHub Pages: `https://doctor-clawler.github.io/playground-arcade-store/` (catalog `2026.07.15.1`, deploy verification pending current push)
+- GitHub Pages: `https://doctor-clawler.github.io/playground-arcade-store/` (catalog `2026.07.15.1`)
+- Pages workflow `29344695293` 성공. HTTPS catalog 12개와 12개 game entry가 모두 HTTP 200을 반환했다.
+- 공개 모바일 브라우저에서 카드 12개, 곰돌이의 집 `mode=stage1`, 자동 fullscreen, console/page/network error 0을 재확인했다.
 - Repository: `https://github.com/doctor-clawler/playground-arcade-store`
