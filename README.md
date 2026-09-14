@@ -1,7 +1,7 @@
 # LOA 게임 포털
 
 정식 프로젝트: `/Volumes/BigHugeMemory/works/playground-arcade-store` · Slack `#loa` · GitHub `doctor-clawler/playground-arcade-store`.
-목표 커스텀 도메인: `https://loa.mibstudio.top/`. DNS 및 HTTPS 연결 상태는 `docs/DEPLOYMENT.md`에서 확인합니다.
+공개 포털: https://loa.mibstudio.top/ — HTTPS 연결 완료. 배포·도메인 운영 절차는 `docs/DEPLOYMENT.md`에서 확인합니다.
 
 모바일에서 게임을 고르고 바로 플레이하는 정적 웹게임 포털입니다. 12개 게임 소스가 `games/<id>/`에 편입되어 놀이터 원본 없이 재빌드할 수 있습니다. 포털 화면 원본은 `site/`, 카탈로그는 `config/games.json`, 생성 배포 디렉터리는 `public/`입니다.
 

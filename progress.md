@@ -53,4 +53,5 @@ Original prompt: `/Volumes/BigHugeMemory/works/playground`에서 #놀이터의 �
 - Replaced playground build dependencies with repository-local paths, built Vite from locked source dependencies, moved portal source to `site/`, and made `public/` fully generated.
 - Added transactional reviewed imports, generic project `build_web.sh`, portable browser verification, versioned skill and developer workflow. Global skill points to this repository.
 - Passed 9 portal tests, imported game focused tests, and all 12 browser first-play/state checks. Corrected mobile filter wrapping and captured a real Gomdori thumbnail.
-- Custom-domain DNS is prepared for `loa.mibstudio.top`; Porkbun authentication is the pending external boundary. No parking or unrelated domain records changed.
+- Configured `loa.mibstudio.top` on GitHub Pages and added its exact Porkbun CNAME after Chrome autofill and Gmail device verification. Existing apex/wildcard/transit records remain unchanged. Certificate approved, HTTPS enforced, root/catalog and 86 runtime files passed. HTTP and the previous Pages URL both redirect to the new HTTPS URL.
+- Domain helper now claims the Pages hostname before DNS, distinguishes certificate waiting from API/auth failures, and optionally waits up to 15 minutes before verifying enforced HTTPS and the catalog. Five focused tests passed.
