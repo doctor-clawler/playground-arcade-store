@@ -56,8 +56,8 @@ GitHub Pages는 `_headers` 파일을 적용하지 않습니다. 실제 게임 �
 - 게임 URL과 썸네일에는 manifest version query가 붙습니다.
 - ready/error bridge가 로딩 완료와 런타임 오류를 부모 스토어에 전달합니다.
 - DOM 게임의 런타임 배치 때문에 game-side CSP에만 inline style을 허용합니다. store-side CSP에는 inline 예외가 없습니다.
-- module 기반 원본은 publish 단계에서 classic 단일 번들로 변환합니다. 브라우저 저장소를 쓰는 게임은 opaque sandbox에서 세션 메모리 fallback을 사용하므로 저장 상태는 해당 플레이 세션 안에서만 유지됩니다.
-- Vite/Three.js 빌드는 CSS를 game entry에 인라인하고 root-relative asset을 정규화하며, classic script를 `defer`로 실행해 opaque sandbox에서도 동작하게 합니다.
+- module 기반 원본은 publish 단계에서 classic 단일 번들로 변환합니다. 게임 실행 전 저장 bridge가 부모 포털의 게임별 localStorage를 복원합니다. 로그인 없이 같은 브라우저 프로필에서 자동 저장되며, 상세 계약과 게임별 범위는 [브라우저 저장](docs/BROWSER_SAVES.md)을 참고합니다.
+- Vite/Three.js 빌드는 CSS를 game entry에 인라인하고 root-relative asset을 정규화하며, classic script를 저장 복원 뒤 순서대로 실행해 opaque sandbox에서도 동작하게 합니다.
 - game-side CSP의 network scheme 허용은 opaque sandbox origin에서 로컬 정적 자원을 읽기 위한 것입니다. entry의 외부 URL은 build validator가 거부하고 `connect-src`는 차단됩니다.
 
 ## 반복 호스팅 스킬

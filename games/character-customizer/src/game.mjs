@@ -1005,5 +1005,17 @@ function frame(timestamp) {
   requestAnimationFrame(frame);
 }
 
+window.LoaSave?.register({
+  version: 1,
+  capture: () => ({ mode: state.mode, activeTab: state.activeTab, saved: state.saved, draft: state.draft }),
+  restore: (saved) => {
+    if (!["start", "customize"].includes(saved.mode) || !["skin", "clothes"].includes(saved.activeTab)) throw new Error("Invalid character save");
+    state.mode = saved.mode;
+    state.activeTab = saved.activeTab;
+    state.saved = saved.saved ? normalizeCharacter(saved.saved) : null;
+    state.draft = normalizeCharacter(saved.draft);
+  },
+});
+
 configureCanvas();
 requestAnimationFrame(frame);

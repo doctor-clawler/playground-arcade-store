@@ -69,18 +69,25 @@
           </div>
           <div id="player-error" class="player-status player-error" hidden role="alert">
             <strong>게임을 열지 못했습니다.</strong>
-            <p id="player-error-message">번들 경로나 리소스를 확인해 주세요.</p>
+            <p id="player-error-message">잠시 후 다시 시도해 주세요.</p>
             <button id="retry-game" class="button button-secondary" type="button">다시 시도</button>
           </div>
+          <p id="save-warning" class="save-warning" role="alert" hidden></p>
           <div id="frame-host" class="frame-host" hidden></div>
         </div>
 
         <div class="player-toolbar">
           <p id="player-label">포스터에서 플레이 버튼을 누르세요.</p>
           <div>
-            <button id="reload-game" class="tool-button" type="button" disabled>↻ 다시 시작</button>
+            <button id="reload-game" class="tool-button" type="button" disabled>↻ 다시 열기</button>
             <button id="fullscreen-game" class="tool-button" type="button" disabled data-testid="fullscreen-game">⛶ 전체화면</button>
           </div>
+        </div>
+
+        <div class="save-info">
+          <p id="save-status" role="status" aria-live="polite">이 브라우저에 자동 저장해요.</p>
+          <p>로그인 없이 같은 브라우저에서 이어 할 수 있어요. 다른 기기와는 공유되지 않으며, 사이트 데이터 삭제나 시크릿 모드 종료 시 저장도 사라져요.</p>
+          <button id="delete-save" class="tool-button" type="button">이 게임 저장 삭제</button>
         </div>
 
         <div class="detail-lower">
@@ -101,6 +108,7 @@
     </main>
 
     <script src="./catalog.js?v=2026.07.15.1"></script>
+    <script src="./assets/save-store.js?v=2026.07.15.1"></script>
     <script src="./assets/app.js?v=2026.07.15.1"></script>
   </body>
 </html>

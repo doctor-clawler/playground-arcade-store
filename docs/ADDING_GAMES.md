@@ -21,6 +21,6 @@
 
 ## 실행·배포 범위
 
-현재 지원: 자체 완결 HTML/CSS/JS, 단일 엔트리 Vite/Three.js. Unity/Defold/WASM, 외부 API/서버 의존 게임은 별도 호환성 작업이 필요합니다. same-origin sandbox 권한을 추가하지 않습니다. 기존 저장소 fallback은 현재 플레이 세션에만 유지됩니다.
+현재 지원: 자체 완결 HTML/CSS/JS, 단일 엔트리 Vite/Three.js. Unity/Defold/WASM, 외부 API/서버 의존 게임은 별도 호환성 작업이 필요합니다. same-origin sandbox 권한을 추가하지 않습니다. [브라우저 저장](BROWSER_SAVES.md)에 따라 게임 상태 adapter를 등록하고 실제 진행 후 재접속·브라우저 재실행 복원을 검증합니다. 기존 `localStorage` 접근만으로 현재 판 전체가 저장된다고 가정하지 않습니다.
 
 `site/`와 `games/`가 소스이고 `public/`은 생성 결과입니다. GitHub Pages workflow는 checkout에서 npm ci → build → test → validate → deploy를 실행합니다. `/build web`은 프로젝트의 `scripts/build_web.sh`를 통해 빌드와 private LAN/Tailscale preview를 제공합니다. 공개 배포는 검증된 commit을 main upstream에 push할 때 실행됩니다.

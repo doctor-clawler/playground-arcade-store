@@ -186,6 +186,18 @@ let lastPointerScreen = null;
 setupWorld();
 setupUi();
 loadSavedWorld();
+window.LoaSave?.register({
+  version: 1,
+  capture: () => ({ objects: captureWorld(), camera: camera.position.toArray(), target: controls.target.toArray() }),
+  restore: (saved) => {
+    if (![saved.camera, saved.target].every((a) => Array.isArray(a) && a.length === 3 && a.every(Number.isFinite))) throw new Error("Invalid camera save");
+    restoreWorld(saved.objects);
+    camera.position.fromArray(saved.camera);
+    controls.target.fromArray(saved.target);
+    controls.update();
+    setStatus(`${state.placements.length}개의 건축물을 이어서 만들어요`);
+  },
+});
 resize();
 animate();
 
@@ -660,16 +672,7 @@ function deletePlacement(placement) {
 }
 
 function saveAndExit() {
-  const payload = {
-    savedAt: new Date().toISOString(),
-    objects: state.placements.map((placement) => ({
-      key: placement.key,
-      x: placement.x,
-      y: placement.y ?? 0,
-      z: placement.z,
-      rotation: placement.rotation,
-    })),
-  };
+  const payload = { savedAt: new Date().toISOString(), objects: captureWorld() };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   state.savedOverlayOpen = true;
   els.savedSummary.textContent = `${state.placements.length}개의 3D 건축물을 저장했어요. 다음에 열면 같은 위치에서 이어서 만들 수 있어요.`;
@@ -686,6 +689,21 @@ function loadSavedWorld() {
   try {
     const payload = JSON.parse(raw);
     const objects = Array.isArray(payload.objects) ? payload.objects : [];
+    restoreWorld(objects);
+    setStatus(`${state.placements.length}개의 저장된 건축물을 불러왔어요`);
+  } catch (error) {
+    console.warn("Saved world could not be loaded.", error);
+    setStatus("저장 데이터를 읽지 못했어요. 새로 만들 수 있어요");
+  }
+}
+
+function captureWorld() {
+  return state.placements.map(({ key, x, y = 0, z, rotation }) => ({ key, x, y, z, rotation }));
+}
+
+function restoreWorld(objects) {
+  if (!Array.isArray(objects) || objects.some((o) => !ITEM_BY_KEY.has(o.key) || ![o.x, o.y ?? 0, o.z, o.rotation ?? 0].every(Number.isFinite))) throw new Error("Invalid building save");
+  for (const placement of [...state.placements]) deletePlacement(placement);
     for (const savedObject of objects) {
       const catalogItem = ITEM_BY_KEY.get(savedObject.key);
       if (!catalogItem) continue;
@@ -705,11 +723,6 @@ function loadSavedWorld() {
         mesh,
       });
     }
-    setStatus(`${state.placements.length}개의 저장된 건축물을 불러왔어요`);
-  } catch (error) {
-    console.warn("Saved world could not be loaded.", error);
-    setStatus("저장 데이터를 읽지 못했어요. 새로 만들 수 있어요");
-  }
 }
 
 function resetWorld() {

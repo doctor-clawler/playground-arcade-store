@@ -17,10 +17,9 @@ import {
 import { validateBuild } from "./validate.mjs";
 
 const allowedExtensions = new Set([".html", ".css", ".js", ".mjs", ".json", ".png", ".jpg", ".jpeg", ".webp", ".svg", ".woff2"]);
-const bridge = `\n<script src="./store-bridge.js"></script>\n`;
 const csp = `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src http: https:; style-src http: https: 'unsafe-inline'; img-src http: https: data:; font-src http: https:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">`;
-const bridgeSource = `(() => {\n  const send = (type, detail = {}) => {\n    if (window.parent !== window) window.parent.postMessage({ source: "playground-game", type, detail }, "*");\n  };\n  window.addEventListener("load", () => send("ready", { title: document.title }));\n  window.addEventListener("error", (event) => send("error", { message: event.message || "게임 리소스 오류" }));\n  window.addEventListener("unhandledrejection", (event) => send("error", { message: String(event.reason || "게임 실행 오류") }));\n  document.addEventListener("keydown", (event) => {\n    if (event.key.toLowerCase() === "f") {\n      event.preventDefault();\n      if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();\n      else document.exitFullscreen?.();\n    }\n  });\n})();\n`;
-const storageFallback = `const __storeMemory = new Map();\nconst safeStorage = {\n  getItem(key) { try { return window.localStorage.getItem(key); } catch { return __storeMemory.get(key) ?? null; } },\n  setItem(key, value) { try { window.localStorage.setItem(key, value); } catch { __storeMemory.set(key, String(value)); } },\n  removeItem(key) { try { window.localStorage.removeItem(key); } catch { __storeMemory.delete(key); } },\n  clear() { try { window.localStorage.clear(); } catch { __storeMemory.clear(); } }\n};\n`;
+const bridgeSource = await readFile(new URL("./game-save-bridge.js", import.meta.url), "utf8");
+const storageFallback = "const safeStorage = window.LoaSave.storage;\n";
 
 function stripModuleSyntax(source) {
   return source
@@ -43,9 +42,15 @@ function normalizeRootRelativeAssets(html) {
   return html.replace(/\b(src|href)=(['"])\/(?!\/)/gi, "$1=$2./");
 }
 
+export function stripRemoteCssImports(css) {
+  // Font URLs may contain semicolons in their quoted query string. Consuming
+  // only through the first semicolon leaves an unterminated CSS string.
+  return css.replace(/@import\s*(?:url\(\s*(?:"https?:\/\/[^"]*"|'https?:\/\/[^']*'|https?:\/\/[^)]*)\s*\)|"https?:\/\/[^"]*"|'https?:\/\/[^']*')[^;]*;/gi, "");
+}
+
 function inlineStylesheet(html, sourcePath, css) {
   const normalizedSource = sourcePath.replace(/^\.\//, "").replace(/^\//, "");
-  const selfContainedCss = css.replace(/@import\s+(?:url\()?['"]?https?:\/\/[^;]+;/gi, "");
+  const selfContainedCss = stripRemoteCssImports(css);
   let replaced = false;
   const next = html.replace(/<link\b([^>]*)\bhref=["']([^"']+)["']([^>]*)>/gi, (tag, before, href) => {
     const normalizedHref = href.replace(/^\.\//, "").replace(/^\//, "");
@@ -250,7 +255,13 @@ export async function syncGames({ manifest: manifestOverride, persistManifest = 
       }
       if (game.normalizeRootRelativeAssets) html = normalizeRootRelativeAssets(html);
       if (!html.includes("Content-Security-Policy")) html = html.replace(/<head([^>]*)>/i, `<head$1>\n    ${csp}`);
-      if (!html.includes("store-bridge.js")) html = html.replace(/<\/body>/i, `${bridge}</body>`);
+      // Delay every game script until its synchronous storage cache has been hydrated.
+      html = html.replace(/<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*><\/script>/gi, (_tag, src) => {
+        const versioned = `${src}${src.includes("?") ? "&" : "?"}loa-v=${encodeURIComponent(game.version)}`;
+        return `<script type="text/plain" data-loa-src="${versioned}"></script>`;
+      });
+      if (/<script\b(?![^>]*data-loa-src)[^>]*>[\s\S]*?\S[\s\S]*?<\/script>/i.test(html)) throw new Error(`Inline scripts need a reviewed external bundle: ${game.id}`);
+      html = html.replace(/<\/head>/i, `<script defer data-game="${game.id}" src="./store-bridge.js?v=${encodeURIComponent(game.version)}"></script>\n</head>`);
       await writeFile(entryFile, html);
       await writeFile(path.join(destinationRoot, "store-bridge.js"), bridgeSource);
 
@@ -264,7 +275,7 @@ export async function syncGames({ manifest: manifestOverride, persistManifest = 
     const encodedStoreVersion = encodeURIComponent(manifest.storeVersion);
     const storeEntryPath = path.join(stagingRoot, "index.html");
     let storeHtml = await readFile(storeEntryPath, "utf8");
-    for (const resource of ["./assets/styles.css", "./catalog.js", "./assets/app.js"]) {
+    for (const resource of ["./assets/styles.css", "./catalog.js", "./assets/save-store.js", "./assets/app.js"]) {
       const escapedResource = resource.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       storeHtml = storeHtml.replace(new RegExp(`(${escapedResource}\\?v=)[^"']+`, "g"), `$1${encodedStoreVersion}`);
     }

@@ -227,6 +227,15 @@ window.addEventListener("keydown", (event) => {
 window.advanceTime = () => {
   render();
 };
+window.LoaSave?.register({
+  version: 1,
+  capture: () => state,
+  restore: (saved) => {
+    if (saved.board?.length !== state.board.length || saved.customers?.length !== 3) throw new Error("Invalid restaurant save");
+    window.LoaSave.restoreObject(state, saved);
+  },
+});
+
 window.render_game_to_text = renderGameToText;
 window.__mergeRestaurant = {
   state,

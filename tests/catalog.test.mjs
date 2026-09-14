@@ -3,9 +3,19 @@ import { access, cp, mkdir, readFile, rm, symlink, utimes, writeFile } from "nod
 import path from "node:path";
 import test from "node:test";
 import { manifestPath, projectRoot, resolveInside } from "../scripts/lib.mjs";
-import { syncGames } from "../scripts/sync-games.mjs";
+import { stripRemoteCssImports, syncGames } from "../scripts/sync-games.mjs";
 import { validateBuild } from "../scripts/validate.mjs";
 import { importGame } from "../scripts/import-game.mjs";
+
+test("removing font imports preserves CSS after semicolons inside quoted URLs", () => {
+  const rules = ':root{color:black}body{margin:0}.topbar{position:fixed}';
+  for (const declaration of [
+    '@import url("https://fonts.googleapis.com/css2?family=Noto:wght@500;700;900&display=swap");',
+    '@import"https://fonts.googleapis.com/css2?family=Noto:wght@500;700;900&display=swap";',
+    "@import url('https://example.com/font;a;b') screen;",
+  ]) assert.equal(stripRemoteCssImports(declaration + rules), rules);
+  assert.equal(stripRemoteCssImports('@import "./local.css";' + rules), '@import "./local.css";' + rules);
+});
 
 test("manifest registers three unique playable games", async () => {
   const manifest = JSON.parse(await readFile(manifestPath, "utf8"));

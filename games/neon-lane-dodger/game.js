@@ -365,6 +365,12 @@
   window.addEventListener("resize", resizeCanvas);
   window.addEventListener("orientationchange", () => setTimeout(resizeCanvas, 80));
 
+  window.LoaSave?.register({
+    version: 1,
+    capture: () => state,
+    restore: (saved) => { state = window.LoaSave.restoreObject(state, saved); },
+  });
+
   resizeCanvas();
   setStatusUi();
   raf = requestAnimationFrame(loop);

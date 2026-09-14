@@ -1,13 +1,17 @@
+import { browserOrigin } from "./browser-origin.mjs";
+import { primaryActions } from "./browser-actions.mjs";
 import playwright from "playwright";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 
 const { chromium } = playwright;
-const baseUrl = process.env.PORTAL_BASE_URL;
+let baseUrl = process.env.PORTAL_BASE_URL;
 if (!baseUrl) throw new Error("Set PORTAL_BASE_URL to the verified preview or public URL");
 await mkdir("output/visual-qa", { recursive: true });
 const catalog = JSON.parse(await readFile(new URL("../public/catalog.json", import.meta.url), "utf8"));
 const browser = await chromium.launch({ headless: true });
-const page = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+baseUrl = await browserOrigin(context, baseUrl);
+const page = await context.newPage();
 const errors = [];
 const failures = [];
 
@@ -37,41 +41,6 @@ await page.goto(`${baseUrl}#game/missing-game`);
 if (!(await page.locator('#not-found-view').isVisible())) failures.push("404 route failed");
 
 
-const primaryActions = {
-  "tooth-runner": async (frame) => frame.locator("#startButton").click({ timeout: 2_000 }),
-  "merge-restaurant": async (frame) => frame.locator("#basket").click({ timeout: 2_000 }),
-  "mystic-candy-shop": async (frame) => {
-    const canvas = frame.locator("canvas");
-    const box = await canvas.boundingBox();
-    await canvas.click({ position: { x: box.width * 126 / 390, y: box.height * 790 / 844 }, timeout: 2_000 });
-  },
-  "neon-lane-dodger": async (frame) => frame.locator("#btn-start").click({ timeout: 2_000 }),
-  "mafia-midnight": async (frame) => {
-    const canvas = frame.locator("canvas");
-    const box = await canvas.boundingBox();
-    await canvas.click({ position: { x: box.width * 295 / 1280, y: box.height * 450 / 720 }, timeout: 2_000 });
-    await canvas.click({ position: { x: box.width * 640 / 1280, y: box.height * 560 / 720 }, timeout: 2_000 });
-  },
-  "character-customizer": async (frame) => {
-    const target = await frame.evaluate(() => {
-      const state = JSON.parse(window.render_game_to_text());
-      const rect = state.visibleControls.find((control) => control.id === "start").rect;
-      const canvas = document.querySelector("canvas");
-      return { x: (rect.x + rect.w / 2) / canvas.width, y: (rect.y + rect.h / 2) / canvas.height };
-    });
-    const canvas = frame.locator("canvas");
-    const box = await canvas.boundingBox();
-    await canvas.click({ position: { x: box.width * target.x, y: box.height * target.y }, timeout: 2_000 });
-  },
-  "hospital-night-shift": async (frame) => frame.locator("#start-button").click({ timeout: 2_000 }),
-  "korean-word-chain": async (frame) => frame.locator("#play-button").click({ timeout: 2_000 }),
-  "camping-town-3d": async (frame) => {
-    await frame.locator('[data-move-key="arrowup"]').click({ delay: 600 });
-  },
-  "word-spy-party": async (frame) => frame.locator("#primaryAction").click({ timeout: 2_000 }),
-  "building-playground-3d": async (frame) => frame.locator("#build-toggle").click({ timeout: 2_000 }),
-  "gomdori-escape-3d": async (frame) => frame.locator("#start3d").click({ timeout: 2_000 })
-};
 
 const results = [];
 for (const game of catalog.games) {
@@ -113,11 +82,13 @@ for (const game of catalog.games) {
   }
 }
 
-const desktop = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+const desktop = await context.newPage();
+await desktop.setViewportSize({ width: 1440, height: 1000 });
 await desktop.goto(baseUrl);
 await desktop.screenshot({ path: "output/visual-qa/portal-desktop.png", fullPage: true });
 const report = { cardCount, gameCount: catalog.games.length, results, errors, failures };
 await writeFile("output/visual-qa/expanded-report.json", `${JSON.stringify(report, null, 2)}\n`);
 console.log(JSON.stringify({ cardCount, gameCount: catalog.games.length, errors, failures }, null, 2));
+await context.unrouteAll({ behavior: "wait" });
 await browser.close();
 if (errors.length || failures.length) process.exitCode = 1;

@@ -1075,8 +1075,14 @@
   canvas.addEventListener("touchstart", (e) => e.preventDefault(), { passive: false });
   canvas.addEventListener("touchmove", (e) => e.preventDefault(), { passive: false });
 
+  window.LoaSave?.register({
+    version: 1,
+    capture: () => ({ ...state, effects: [], screenShake: 0 }),
+    restore: (saved) => { window.LoaSave.restoreObject(state, saved); },
+  });
+
   setupCanvasScale();
-  spawnIngredient();
+  if (!window.LoaSave?.storage.getItem("__loa_checkpoint_v1")) spawnIngredient();
   render();
   requestAnimationFrame(loop);
 })();

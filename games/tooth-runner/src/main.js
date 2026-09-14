@@ -472,6 +472,12 @@ canvas.addEventListener("pointerup", (event) => {
   input.pointerActive = false;
 });
 
+window.LoaSave?.register({
+  version: 1,
+  capture: () => state,
+  restore: (saved) => { state = window.LoaSave.restoreObject(state, saved); },
+});
+
 window.render_game_to_text = () => renderStateToText(state);
 window.advanceTime = (ms) => {
   const steps = Math.max(1, Math.round(ms / (1000 / 60)));

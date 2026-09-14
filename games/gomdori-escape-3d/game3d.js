@@ -1226,3 +1226,38 @@ window.render_game_to_text = () => JSON.stringify({
   coins: state.coins,
   message: state.messageT > 0 ? state.message : "",
 });
+
+// Rebuild scene objects and handlers, then restore the plain simulation checkpoint.
+window.LoaSave?.register({
+  version: 1,
+  capture: () => {
+    const saved = JSON.parse(JSON.stringify(state));
+    // Finish the two delayed transitions in the checkpoint so closing mid-animation
+    // cannot strand an opened chest or an already-unlocked door.
+    if (saved.mode === "reward" && saved.chestOpen) { saved.mode = "menu"; saved.finalReturn = true; }
+    if (saved.mode === "stage2" && saved.bear.stunned && !saved.keypadOpen) {
+      saved.mode = "stage3"; saved.stage = 3;
+      saved.bounds = { minX: -5.2, maxX: 5.2, minZ: -5.2, maxZ: 5.2 };
+      saved.player = { ...saved.player, x: -3.5, z: 3.8, yaw: 0, pitch: 0, hidden: false };
+      saved.stage3Key = false; saved.kidFreed = false; saved.knife = false; saved.rescueTimer = 7;
+    }
+    return saved;
+  },
+  restore: (saved) => {
+    const builders = { menu: showMenu, stage1: resetStage1, stairs: startStairs, stage2: resetStage2, stage3: resetStage3, hallway: showHallway, choice: showHallway, reward: startRewardRoom };
+    if (!Object.hasOwn(builders, saved.mode)) throw new Error("Invalid escape save");
+    window.LoaSave.restoreObject(state, JSON.parse(JSON.stringify(saved)));
+    ui.panel.classList.remove("is-visible");
+    builders[saved.mode]();
+    // Builders deliberately reset their stage; the persisted flags take precedence.
+    Object.assign(state, saved);
+    if (saved.mode === "choice") showChoice();
+    if (saved.keypadOpen) {
+      showKeypad();
+      state.codeInput = saved.codeInput;
+      ui.panel.querySelector("#codeDisplay").textContent = state.codeInput.padEnd(3, "_");
+    }
+    syncCamera();
+    updateUi();
+  },
+});

@@ -95,3 +95,13 @@ Screenshots were opened and visually inspected. No overlap, clipping, horizontal
 - Pages workflow `29344695293` 성공. HTTPS catalog 12개와 12개 game entry가 모두 HTTP 200을 반환했다.
 - 공개 모바일 브라우저에서 카드 12개, 곰돌이의 집 `mode=stage1`, 자동 fullscreen, console/page/network error 0을 재확인했다.
 - Repository: `https://github.com/doctor-clawler/playground-arcade-store`
+
+
+## 2026-09-15 browser saves (catalog 2026.09.15.1)
+
+- `npm run build` (including camping TypeScript check), `npm test` 20 tests, `npm run validate` passed. The eight game repositories with real test commands passed their existing suites; Gomdori's placeholder test command was not counted.
+- `test:browser`: all 12 games loaded, accepted their first action and changed runtime state, with no console/page/resource errors. The CSS import sanitizer now preserves styles after semicolons inside font URLs. Word-chain submission no longer attempts sandbox-blocked form navigation.
+- `test:saves`: all 12 games changed real gameplay state, left/reopened the portal and restored after a Chromium process restart using the same isolated profile. Also verified whole-page reload, toolbar reopen, same-game tab exclusion, forged-message rejection, corrupt-record preservation, per-game delete isolation, denied storage, quota warning and preservation of the last save.
+- Additional save fixtures verified Gomdori's keypad→stage 3 and reward resume, a named camping tent with furniture, and direct game URL routing. These fixtures test scene reconstruction, not a complete manual playthrough of each game.
+- Actual mobile/desktop screenshots inspected under `output/visual-qa/saves/`: restored board/character/building, furnished tent/stage 3, save information and visible quota warning. Chromium mobile emulation; real iPhone Safari remains untested.
+- Local browser tests route the verified HTTP preview bytes into an isolated HTTPS test origin for Web Locks. Public deployment verification uses the real HTTPS origin without test routing. LAN/Tailscale preview links are not TLS/browser-save evidence.

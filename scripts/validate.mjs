@@ -53,7 +53,7 @@ export async function validateBuild({ root = publicRoot, manifest: manifestOverr
     if (!storeHtml.includes(required)) failures.push(`store entry missing ${required}`);
   }
   const encodedStoreVersion = encodeURIComponent(manifest.storeVersion);
-  for (const resource of ["./assets/styles.css", "./catalog.js", "./assets/app.js"]) {
+  for (const resource of ["./assets/styles.css", "./catalog.js", "./assets/save-store.js", "./assets/app.js"]) {
     if (!storeHtml.includes(`${resource}?v=${encodedStoreVersion}`)) failures.push(`store entry has stale cache version for ${resource}`);
   }
 

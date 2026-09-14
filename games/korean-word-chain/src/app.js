@@ -77,7 +77,7 @@ function renderGame() {
         </div>
         <form class="entry" id="word-form">
           <input id="word-input" name="word" autocomplete="off" inputmode="text" maxlength="12" placeholder="단어 입력" />
-          <button class="primary-button" id="submit-word" type="submit">말하기</button>
+          <button class="primary-button" id="submit-word" type="button">말하기</button>
           <button class="secondary-button" id="give-up" type="button">못 이어요</button>
         </form>
         <div class="word-list" aria-label="사용한 단어">
@@ -90,11 +90,16 @@ function renderGame() {
   const form = document.querySelector("#word-form");
   const input = document.querySelector("#word-input");
   const wordList = document.querySelector(".word-list");
-  form.addEventListener("submit", (event) => {
+  function submitWord(event) {
     event.preventDefault();
     state = submitPlayerWord(state, input.value);
     saveBalance();
     render();
+  }
+  form.addEventListener("submit", submitWord);
+  document.querySelector("#submit-word").addEventListener("click", submitWord);
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.isComposing && event.keyCode !== 229) submitWord(event);
   });
   document.querySelector("#give-up").addEventListener("click", () => {
     state = giveUp(state);
@@ -128,6 +133,15 @@ function render() {
     renderGame();
   }
 }
+
+window.LoaSave?.register({
+  version: 1,
+  capture: () => state,
+  restore: (saved) => {
+    if (!["lobby", "playing"].includes(saved.mode) || !Array.isArray(saved.history)) throw new Error("Invalid word-chain save");
+    state = saved;
+  },
+});
 
 window.render_game_to_text = () =>
   JSON.stringify({

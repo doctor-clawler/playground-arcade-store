@@ -55,3 +55,11 @@ Original prompt: `/Volumes/BigHugeMemory/works/playground`에서 #놀이터의 �
 - Passed 9 portal tests, imported game focused tests, and all 12 browser first-play/state checks. Corrected mobile filter wrapping and captured a real Gomdori thumbnail.
 - Configured `loa.mibstudio.top` on GitHub Pages and added its exact Porkbun CNAME after Chrome autofill and Gmail device verification. Existing apex/wildcard/transit records remain unchanged. Certificate approved, HTTPS enforced, root/catalog and 86 runtime files passed. HTTP and the previous Pages URL both redirect to the new HTTPS URL.
 - Domain helper now claims the Pages hostname before DNS, distinguishes certificate waiting from API/auth failures, and optionally waits up to 15 minutes before verifying enforced HTTPS and the catalog. Five focused tests passed.
+
+
+## 2026-09-15 browser-only saves
+
+- User chose browser-only progress, without login or a backend. Added per-game parent localStorage, pre-execution hydration over a source/nonce-bound MessagePort, game locks, revisions, failure status and scoped deletion. Kept opaque sandbox isolation.
+- Added checkpoint adapters to all 12 maintained games; existing manual saves still work. Added browser restart and scene reconstruction QA plus documented game-specific save scope and future import requirements.
+- Browser QA found and fixed fullscreen completion racing a save error, CSS font-import stripping truncating quoted semicolon URLs, and sandbox-blocked Korean word submission. Direct game entry URLs now open the portal detail.
+- Local build, 20 portal tests, existing game suites, 12-game first-action QA, save/restart/isolation/failure QA and additional 3D save scenes passed. Screenshots inspected. Public HTTPS verification follows the authorized source push.

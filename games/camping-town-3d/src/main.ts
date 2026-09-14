@@ -60,7 +60,18 @@ interface PersonStyle {
   hairVariant?: PersonHairVariant;
 }
 
+interface CampingCheckpoint {
+  state: ReturnType<typeof createInitialState>;
+  mode: Mode;
+  activeTentId: string | null;
+  position: number[];
+}
+
 interface WindowWithGameHooks extends Window {
+  LoaSave?: {
+    register(adapter: { version: number; capture: () => CampingCheckpoint; restore: (saved: CampingCheckpoint) => void }): void;
+    restoreObject<T extends object>(target: T, saved: T): T;
+  };
   render_game_to_text?: () => string;
   advanceTime?: (ms: number) => void;
 }
@@ -180,6 +191,20 @@ renderer.domElement.addEventListener("webglcontextlost", (event: Event) => {
   step(Math.max(0, ms));
   renderFrame();
 };
+
+(window as WindowWithGameHooks).LoaSave?.register({
+  version: 1,
+  capture: () => ({ state, mode, activeTentId: mode === "tent" ? activeTentId : null, position: player.position.toArray() }),
+  restore: (saved) => {
+    if (!["camp", "tent", "toilet"].includes(saved.mode) || saved.position?.length !== 3 || !saved.position.every(Number.isFinite)) throw new Error("Invalid camping save");
+    (window as WindowWithGameHooks).LoaSave!.restoreObject(state, saved.state);
+    activeTentId = saved.activeTentId;
+    setMode(saved.mode);
+    player.position.fromArray(saved.position);
+    syncScene();
+    updateHud();
+  },
+});
 
 renderer.setAnimationLoop(() => {
   const deltaMs = Math.min(clock.getDelta() * 1000, 80);

@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "storeVersion": "2026.09.14.1",
+  "storeVersion": "2026.09.15.1",
   "games": [
     {
       "id": "tooth-runner",
       "title": "이빨 피하기",
       "edition": "Survival Edition",
-      "version": "0.1.0",
+      "version": "2026.09.15.1",
       "featured": true,
       "genre": "액션",
       "tags": [
@@ -65,7 +65,7 @@
       "id": "merge-restaurant",
       "title": "스파게티 머지",
       "edition": "Restaurant Board",
-      "version": "0.1.0",
+      "version": "2026.09.15.1",
       "featured": false,
       "genre": "퍼즐",
       "tags": [
@@ -124,7 +124,7 @@
       "id": "mystic-candy-shop",
       "title": "기묘한 과자점",
       "edition": "Magic Tycoon",
-      "version": "0.1.0",
+      "version": "2026.09.15.1",
       "featured": false,
       "genre": "타이쿤",
       "tags": [
@@ -174,7 +174,7 @@
       "id": "neon-lane-dodger",
       "title": "네온 레인",
       "edition": "Lane Dodger",
-      "version": "1.0.0",
+      "version": "2026.09.15.1",
       "featured": true,
       "genre": "액션",
       "tags": [
@@ -235,7 +235,7 @@
       "id": "mafia-midnight",
       "title": "자정의 증언",
       "edition": "Midnight Trial",
-      "version": "1.0.0",
+      "version": "2026.09.15.1",
       "featured": true,
       "genre": "추리",
       "tags": [
@@ -283,7 +283,7 @@
       "id": "character-customizer",
       "title": "캐릭터 꾸미기",
       "edition": "Color Studio",
-      "version": "1.0.0",
+      "version": "2026.09.15.1",
       "featured": false,
       "genre": "꾸미기",
       "tags": [
@@ -341,7 +341,7 @@
       "id": "hospital-night-shift",
       "title": "병원 야간 접수",
       "edition": "Night Ward 3D",
-      "version": "0.1.0",
+      "version": "2026.09.15.1",
       "featured": true,
       "genre": "어드벤처",
       "tags": [
@@ -389,7 +389,7 @@
       "id": "korean-word-chain",
       "title": "끝말잇기",
       "edition": "Easy Korean",
-      "version": "0.1.0",
+      "version": "2026.09.15.1",
       "featured": false,
       "genre": "퍼즐",
       "tags": [
@@ -449,7 +449,7 @@
       "id": "camping-town-3d",
       "title": "솔바람 캠핑 타운",
       "edition": "Cozy Town",
-      "version": "0.1.0",
+      "version": "2026.09.15.1",
       "featured": true,
       "genre": "시뮬레이션",
       "tags": [
@@ -496,7 +496,7 @@
       "id": "word-spy-party",
       "title": "우리 중 스파이",
       "edition": "Word Party",
-      "version": "0.1.0",
+      "version": "2026.09.15.1",
       "featured": false,
       "genre": "파티",
       "tags": [
@@ -555,7 +555,7 @@
       "id": "building-playground-3d",
       "title": "3D 건축 놀이터",
       "edition": "Build & Save",
-      "version": "1.0.0",
+      "version": "2026.09.15.1",
       "featured": false,
       "genre": "샌드박스",
       "tags": [
@@ -603,7 +603,7 @@
       "id": "gomdori-escape-3d",
       "title": "곰돌이의 집",
       "edition": "Escape Story",
-      "version": "1.0.0",
+      "version": "2026.09.15.1",
       "featured": true,
       "genre": "어드벤처",
       "tags": [

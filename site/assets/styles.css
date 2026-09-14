@@ -436,3 +436,10 @@ img { display: block; max-width: 100%; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
+
+.save-info { margin: 0 0 32px; max-width: 720px; color: var(--muted, #625f55); font-size: 14px; line-height: 1.65; }
+.save-info p { margin: 8px 0; }
+#save-status { color: #365b3f; font-weight: 700; }
+#save-status[data-state="error"] { color: #94371f; }
+#delete-save { min-height: 44px; margin-top: 4px; }
+.save-warning { position: absolute; z-index: 10; bottom: 12px; left: 12px; right: 12px; padding: 12px; margin: 0; background: #fff4d9; color: #72301e; border: 1px solid #a85a2e; border-radius: 8px; font-size: 14px; line-height: 1.5; pointer-events: none; }

@@ -76,6 +76,24 @@ buildDoctors();
 spawnNextGuest();
 updateHud();
 
+window.LoaSave?.register({
+  version: 1,
+  capture: () => ({ state, spawnIndex, spawnTimer, position: playerPosition.toArray(), yaw, pitch }),
+  restore: (saved) => {
+    if (!Array.isArray(saved.position) || saved.position.length !== 3 || !saved.position.every(Number.isFinite)) throw new Error("Invalid hospital save");
+    clearGuestsForDebug();
+    window.LoaSave.restoreObject(state, saved.state);
+    spawnIndex = saved.spawnIndex;
+    spawnTimer = saved.spawnTimer;
+    playerPosition.fromArray(saved.position);
+    yaw = saved.yaw; pitch = saved.pitch;
+    syncGuests(0);
+    updateCamera();
+    updateHud();
+    startButton.textContent = "이어서 근무하기";
+  },
+});
+
 window.__hospitalGame = {
   state,
   spawnGuest: spawnNextGuest,

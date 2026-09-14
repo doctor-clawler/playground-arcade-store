@@ -4,7 +4,7 @@
   const catalog = window.PLAYGROUND_CATALOG;
   const games = catalog?.games || [];
   const byId = new Map(games.map((game) => [game.id, game]));
-  const state = { query: "", genre: "전체", currentGame: null, loadTimer: null };
+  const state = { query: "", genre: "전체", currentGame: null, loadTimer: null, saveSession: null, action: 0 };
 
   const $ = (selector) => document.querySelector(selector);
   const homeView = $("#home-view");
@@ -100,6 +100,12 @@
     try {
       const request = requestFullscreen.call(playerShell, { navigationUI: "hide" });
       Promise.resolve(request).then(() => {
+        // A fast load/save failure may have exited CSS play mode while the
+        // browser was still processing the fullscreen request.
+        if (!playerShell.classList.contains("is-mobile-play")) {
+          if (document.fullscreenElement === playerShell) return document.exitFullscreen?.();
+          return;
+        }
         const orientation = game.orientation === "가로" ? "landscape" : "portrait";
         return window.screen.orientation?.lock?.(orientation);
       }).catch(() => {});
@@ -108,7 +114,11 @@
     }
   }
 
-  function resetPlayer({ keepMobileMode = false } = {}) {
+  async function resetPlayer({ keepMobileMode = false } = {}) {
+    const oldSession = state.saveSession;
+    if (oldSession) await oldSession.close();
+    if (state.saveSession === oldSession) state.saveSession = null;
+    if (state.saveSession) return;
     clearTimeout(state.loadTimer);
     if (!keepMobileMode) exitMobilePlayMode();
     frameHost.replaceChildren();
@@ -125,7 +135,7 @@
   function fillDetail(game) {
     state.currentGame = game;
     playerShell.dataset.orientation = game.orientation === "세로" ? "portrait" : "landscape";
-    resetPlayer();
+    setSaveStatus("ready", "이 브라우저에 자동 저장해요.");
     $("#detail-title").textContent = game.title;
     $("#detail-description").textContent = game.description;
     $("#player-poster-image").src = game.thumbnailUrl;
@@ -134,10 +144,13 @@
     $("#controls-list").innerHTML = game.mobileControls.map((control) => `<li>${escapeHtml(control)}</li>`).join("");
   }
 
-  function startGame() {
+  async function startGame() {
     const game = state.currentGame;
     if (!game) return;
-    resetPlayer({ keepMobileMode: true });
+    const action = ++state.action;
+    enterMobilePlayMode(game);
+    await resetPlayer({ keepMobileMode: true });
+    if (action !== state.action) return;
     playerPoster.hidden = true;
     playerLoading.hidden = false;
     playerShell.dataset.state = "loading";
@@ -145,15 +158,17 @@
 
     const iframe = document.createElement("iframe");
     iframe.title = `${game.title} 게임 플레이어`;
-    iframe.src = game.entryUrl;
+    const nonce = Array.from(crypto.getRandomValues(new Uint32Array(4)), (n) => n.toString(16)).join("-");
+    iframe.src = `${game.entryUrl}#loa-session=${nonce}`;
     iframe.allow = "fullscreen; gamepad";
     iframe.setAttribute("sandbox", "allow-scripts allow-pointer-lock");
     iframe.setAttribute("referrerpolicy", "no-referrer");
     iframe.setAttribute("data-testid", "game-frame");
+    state.saveSession = LoaSaveStore.connect({ frame: iframe, id: game.id, nonce,
+      onStatus: setSaveStatus, onReady: showPlayerReady, onError: showPlayerError });
     frameHost.append(iframe);
-    enterMobilePlayMode(game);
 
-    state.loadTimer = window.setTimeout(() => showPlayerError("게임 준비 신호를 받지 못했습니다. 정적 번들을 다시 검증해 주세요."), 12000);
+    state.loadTimer = window.setTimeout(() => showPlayerError("게임을 불러오지 못했어요. 다시 시도해 주세요."), 12000);
   }
 
   function showPlayerReady() {
@@ -178,33 +193,36 @@
     exitMobilePlayMode();
   }
 
-  function route() {
+  function setSaveStatus(kind, text) {
+    $("#save-status").dataset.state = kind;
+    $("#save-status").textContent = text;
+    $("#save-warning").hidden = kind !== "error";
+    $("#save-warning").textContent = kind === "error" ? text : "";
+  }
+
+  async function route() {
+    const action = ++state.action;
+    await resetPlayer();
+    if (action !== state.action) return;
     const hash = window.location.hash.replace(/^#\/?/, "") || "home";
+    state.currentGame = null;
     if (hash === "home") {
       showView("home");
-      state.currentGame = null;
-      resetPlayer();
       document.title = "PLAY//GROUND — 놀이터 아케이드";
-      return;
-    }
-    if (hash === "not-found") {
-      showView("not-found");
       return;
     }
     if (hash.startsWith("game/")) {
       const game = byId.get(hash.slice(5));
-      if (!game) {
-        showView("not-found");
-        document.title = "게임을 찾을 수 없음 — PLAY//GROUND";
+      if (game) {
+        showView("detail");
+        fillDetail(game);
+        document.title = `${game.title} — PLAY//GROUND`;
+        window.scrollTo({ top: 0, behavior: "instant" });
         return;
       }
-      showView("detail");
-      fillDetail(game);
-      document.title = `${game.title} — PLAY//GROUND`;
-      window.scrollTo({ top: 0, behavior: "instant" });
-      return;
     }
     showView("not-found");
+    document.title = "게임을 찾을 수 없음 — PLAY//GROUND";
   }
 
   searchInput.addEventListener("input", () => { state.query = searchInput.value; renderCatalog(); });
@@ -215,7 +233,19 @@
   $("#start-game").addEventListener("click", startGame);
   $("#retry-game").addEventListener("click", startGame);
   $("#reload-game").addEventListener("click", startGame);
-  $("#exit-mobile-player").addEventListener("click", exitMobilePlayMode);
+  $("#exit-mobile-player").addEventListener("click", () => { state.saveSession?.flush(); exitMobilePlayMode(); });
+  $("#delete-save").addEventListener("click", async () => {
+    const game = state.currentGame;
+    if (!game || !window.confirm(`${game.title}의 저장을 삭제하고 처음부터 시작할까요? 다른 게임 저장은 유지돼요.`)) return;
+    ++state.action;
+    await resetPlayer();
+    try {
+      await LoaSaveStore.remove(game.id);
+      setSaveStatus("ready", "저장을 삭제했어요. 플레이를 누르면 새로 시작해요.");
+    } catch (error) { setSaveStatus("error", error.message); }
+  });
+  window.addEventListener("pagehide", () => state.saveSession?.close());
+  window.addEventListener("pageshow", (event) => { if (event.persisted) route(); });
   $("#fullscreen-game").addEventListener("click", async () => {
     const iframe = frameHost.querySelector("iframe");
     if (!iframe) return;
@@ -224,12 +254,6 @@
       return;
     }
     try { await iframe.requestFullscreen(); } catch { showPlayerError("이 브라우저에서 전체화면을 시작할 수 없습니다."); }
-  });
-  window.addEventListener("message", (event) => {
-    const iframe = frameHost.querySelector("iframe");
-    if (!iframe || event.source !== iframe.contentWindow || event.data?.source !== "playground-game") return;
-    if (event.data.type === "ready") showPlayerReady();
-    if (event.data.type === "error") showPlayerError(event.data.detail?.message || "게임 내부 오류가 발생했습니다.");
   });
   window.addEventListener("hashchange", route);
   document.addEventListener("fullscreenchange", () => {

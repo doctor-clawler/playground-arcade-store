@@ -179,6 +179,16 @@
   function point(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height};}
   canvas.addEventListener('pointerup',e=>{const p=point(e);const h=[...hit].reverse().find(a=>p.x>=a.x&&p.x<=a.x+a.w&&p.y>=a.y&&p.y<=a.y+a.h);if(h)h.action();canvas.focus();});
   document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='f'){if(!document.fullscreenElement)canvas.requestFullscreen?.();else document.exitFullscreen?.();}});
+  window.LoaSave?.register({
+    version: 1,
+    capture: () => ({ state, seed }),
+    restore: (saved) => {
+      if (!Number.isInteger(saved.seed) || ![0, 8].includes(saved.state?.players?.length)) throw new Error("Invalid mafia save");
+      window.LoaSave.restoreObject(state, saved.state);
+      seed = saved.seed;
+    },
+  });
+
   window.render_game_to_text=()=>JSON.stringify({coordinateSystem:'1280x720 canvas; origin top-left; x right, y down',mode:state.mode,phase:state.phase,day:state.day,playerRole:state.playerRole,selected:state.selected==null?null:state.players[state.selected]?.name,message:state.message,dialogue:state.log,players:state.players.map(p=>({name:p.name,alive:p.alive,knownRole:(state.mode==='end'||(state.playerRole==='mafia'&&p.role==='mafia'))?p.role:undefined})),result:state.results,winner:state.winner});
   window.advanceTime=()=>render();
   render();

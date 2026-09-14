@@ -262,6 +262,15 @@ els.wordCard.addEventListener("click", () => {
   }
 });
 
+window.LoaSave?.register({
+  version: 1,
+  capture: () => ({ ...state, visiblePlayerIndexes: [...state.visiblePlayerIndexes], usedPairIds: [...state.usedPairIds], usedWords: [...state.usedWords], wordVisible: false }),
+  restore: (saved) => {
+    if (!Array.isArray(saved.visiblePlayerIndexes) || !Array.isArray(saved.usedPairIds) || !Array.isArray(saved.usedWords)) throw new Error("Invalid word-spy save");
+    Object.assign(state, saved, { visiblePlayerIndexes: new Set(saved.visiblePlayerIndexes), usedPairIds: new Set(saved.usedPairIds), usedWords: new Set(saved.usedWords), wordVisible: false });
+  },
+});
+
 window.render_game_to_text = () => {
   const assignment = getCurrentAssignment();
   return JSON.stringify({
