@@ -1,0 +1,355 @@
+:root {
+  --ink: #eef8f7;
+  --muted: #9eb9b5;
+  --panel: rgba(7, 18, 20, 0.78);
+  --panel-strong: rgba(8, 24, 26, 0.92);
+  --line: rgba(186, 236, 229, 0.22);
+  --accent: #50e3c2;
+  --danger: #ff6b6b;
+  --warn: #ffd166;
+  --shadow: 0 18px 54px rgba(0, 0, 0, 0.34);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#game-root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  background: #071214;
+  color: var(--ink);
+}
+
+#game-root {
+  position: relative;
+  isolation: isolate;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+}
+
+#crosshair {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(238, 248, 247, 0.72);
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 3;
+}
+
+#crosshair::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(238, 248, 247, 0.86);
+  transform: translate(-50%, -50%);
+}
+
+#hud {
+  position: absolute;
+  left: clamp(12px, 2vw, 24px);
+  top: clamp(12px, 2vw, 24px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.health-wrap,
+#status-chip,
+#rooms-strip,
+#dialogue,
+#start-panel {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+}
+
+.health-wrap {
+  display: grid;
+  grid-template-columns: auto minmax(88px, 14vw) 36px;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.health-meter {
+  position: relative;
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(238, 248, 247, 0.18);
+}
+
+#health-fill {
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), #b7f8dd);
+  transition: width 160ms ease, background 160ms ease;
+}
+
+#status-chip {
+  min-height: 38px;
+  max-width: min(48vw, 420px);
+  padding: 9px 12px;
+  border-radius: 8px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#rooms-strip {
+  position: absolute;
+  right: clamp(12px, 2vw, 24px);
+  top: clamp(12px, 2vw, 24px);
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  z-index: 4;
+  pointer-events: none;
+}
+
+#rooms-strip span {
+  min-width: 76px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: rgba(238, 248, 247, 0.1);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+}
+
+#rooms-strip span.busy {
+  color: #04100d;
+  background: var(--accent);
+}
+
+#move-pad {
+  position: absolute;
+  left: clamp(12px, 2vw, 24px);
+  bottom: clamp(12px, 3vh, 28px);
+  z-index: 5;
+  display: grid;
+  grid-template-columns: repeat(3, 40px);
+  grid-template-rows: repeat(3, 40px);
+  gap: 6px;
+  touch-action: none;
+  user-select: none;
+}
+
+#move-pad button {
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(238, 248, 247, 0.26);
+  border-radius: 8px;
+  background: rgba(7, 18, 20, 0.76);
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+}
+
+#move-pad button:active,
+#move-pad button.active {
+  background: var(--accent);
+  color: #04100d;
+  transform: translateY(1px);
+}
+
+#move-forward {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+#move-left {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+#move-back {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+#move-right {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+#talisman-button {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(14px, 4vh, 34px);
+  z-index: 5;
+  width: clamp(76px, 18vw, 112px);
+  aspect-ratio: 1.6;
+  border: 1px solid rgba(255, 209, 102, 0.66);
+  border-radius: 8px;
+  background: linear-gradient(180deg, #ffe59b, #f6b13d);
+  color: #3b2100;
+  font-size: clamp(16px, 2.6vw, 22px);
+  font-weight: 900;
+  transform: translateX(-50%);
+  box-shadow: 0 16px 30px rgba(255, 177, 61, 0.26);
+  cursor: pointer;
+  transition: transform 120ms ease, filter 120ms ease;
+}
+
+#talisman-button:hover,
+#talisman-button.active {
+  filter: brightness(1.08);
+  transform: translateX(-50%) translateY(-2px);
+}
+
+#talisman-button.active {
+  border-color: rgba(255, 255, 255, 0.92);
+}
+
+#dialogue {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(90px, 16vh, 142px);
+  z-index: 7;
+  width: min(460px, calc(100vw - 28px));
+  padding: 16px;
+  border-radius: 8px;
+  transform: translateX(-50%);
+}
+
+#guest-line {
+  min-height: 44px;
+  color: var(--ink);
+  font-size: clamp(18px, 4vw, 26px);
+  font-weight: 900;
+  line-height: 1.28;
+  text-align: center;
+}
+
+.dialogue-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.dialogue-actions button,
+#start-button {
+  min-height: 46px;
+  border: 1px solid rgba(238, 248, 247, 0.24);
+  border-radius: 8px;
+  background: #e8fffa;
+  color: #05201c;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+#reject-button {
+  background: #142729;
+  color: var(--ink);
+}
+
+#start-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-content: center;
+  gap: 18px;
+  border: 0;
+  border-radius: 0;
+  background:
+    radial-gradient(circle at 52% 48%, rgba(80, 227, 194, 0.16), transparent 34%),
+    rgba(4, 12, 14, 0.86);
+  text-align: center;
+}
+
+#start-panel h1 {
+  margin: 0;
+  font-size: clamp(40px, 9vw, 92px);
+  line-height: 0.95;
+  letter-spacing: 0;
+  text-shadow: 0 14px 46px rgba(0, 0, 0, 0.48);
+}
+
+#start-button {
+  justify-self: center;
+  min-width: 140px;
+  background: var(--accent);
+}
+
+.hidden {
+  display: none !important;
+}
+
+@media (max-width: 720px) {
+  #hud {
+    right: 12px;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  #rooms-strip {
+    left: auto;
+    right: auto;
+    top: 110px;
+    right: 12px;
+    bottom: auto;
+    max-width: calc(100vw - 24px);
+    overflow: hidden;
+  }
+
+  #rooms-strip span {
+    min-width: 58px;
+    font-size: 11px;
+  }
+
+  #move-pad {
+    grid-template-columns: repeat(3, 38px);
+    grid-template-rows: repeat(3, 38px);
+    gap: 5px;
+  }
+
+  #move-pad button {
+    width: 38px;
+    height: 38px;
+  }
+}

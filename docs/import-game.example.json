@@ -1,0 +1,38 @@
+{
+  "projectPath": "example-game",
+  "projectFiles": [
+    "index.html",
+    "styles.css",
+    "game.js",
+    "README.md"
+  ],
+  "thumbnailSource": "example-game/output/gameplay.png",
+  "game": {
+    "id": "example-game",
+    "title": "새 게임",
+    "version": "1.0.0",
+    "genre": "퍼즐",
+    "tags": [
+      "캐주얼"
+    ],
+    "orientation": "세로",
+    "entry": "index.html",
+    "bundleFiles": [
+      "index.html",
+      "styles.css",
+      "game.js"
+    ],
+    "shortDescription": "한 줄 설명",
+    "description": "게임 설명",
+    "controls": [
+      "마우스로 조작"
+    ],
+    "mobileControls": [
+      "화면을 탭해 조작하세요."
+    ],
+    "provenance": {
+      "source": "playground",
+      "threadUrl": "실제 원문 링크가 있으면 기록"
+    }
+  }
+}

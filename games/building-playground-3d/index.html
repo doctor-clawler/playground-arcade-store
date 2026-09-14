@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D 건축 놀이터</title>
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="game-canvas" aria-label="3D 건축 게임 화면"></canvas>
+
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">▦</span>
+          <div>
+            <strong>3D 건축 놀이터</strong>
+            <span id="status-text">블록을 골라 바닥에 놓아보세요</span>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button id="rotate-button" class="icon-button" type="button" title="선택한 물체 돌리기" aria-label="선택한 물체 돌리기">↻</button>
+          <button id="save-exit-button" class="primary-button" type="button">저장하고 나가기</button>
+        </div>
+      </header>
+
+      <aside class="help-panel" aria-label="조작 안내">
+        <strong>놓기</strong>
+        <span>바닥 클릭</span>
+        <strong>보기</strong>
+        <span>드래그 / 휠</span>
+        <strong>회전</strong>
+        <span>R 또는 ↻</span>
+      </aside>
+
+      <section id="build-panel" class="build-panel" aria-label="만들기 목록" hidden>
+        <nav id="category-tabs" class="category-tabs" aria-label="건축물 분류"></nav>
+        <div id="item-grid" class="item-grid" aria-label="건축물 선택"></div>
+      </section>
+
+      <div class="bottom-actions" aria-label="건축 조작">
+        <button id="delete-toggle" class="delete-toggle" type="button" aria-pressed="false">삭제</button>
+        <button id="build-toggle" class="build-toggle" type="button">만들기</button>
+      </div>
+
+      <div id="saved-screen" class="saved-screen" role="dialog" aria-modal="true" aria-labelledby="saved-title" hidden>
+        <div class="saved-box">
+          <p class="saved-kicker">저장 완료</p>
+          <h1 id="saved-title">건축물이 저장됐어요</h1>
+          <p id="saved-summary">다음에 다시 열면 그대로 이어서 만들 수 있어요.</p>
+          <div class="saved-actions">
+            <button id="continue-button" class="primary-button" type="button">계속 만들기</button>
+            <button id="new-world-button" class="secondary-button" type="button">새로 시작</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

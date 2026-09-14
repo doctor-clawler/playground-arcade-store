@@ -1,0 +1,6 @@
+{
+  "name": "neon-lane-dodger",
+  "private": true,
+  "type": "commonjs",
+  "scripts": { "test": "node tests/smoke.test.mjs" }
+}

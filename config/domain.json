@@ -1,0 +1,11 @@
+{
+  "hostname": "loa.mibstudio.top",
+  "provider": "github-pages",
+  "repository": "doctor-clawler/playground-arcade-store",
+  "dns": {
+    "type": "CNAME",
+    "name": "loa",
+    "value": "doctor-clawler.github.io",
+    "ttl": 600
+  }
+}

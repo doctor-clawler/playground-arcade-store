@@ -1,3 +1,20 @@
+# 2026-09-14 formal promotion verification
+
+- Formal root `/Volumes/BigHugeMemory/works/playground-arcade-store`, existing Git history/upstream preserved. Live `_ops` DB and registry: active, Slack `#loa` (`C0C1P2B8LSV`), requesting user invited.
+- All 12 catalog games have editable source and relevant tests under `games/<id>/`. All source dependencies and thumbnails resolve inside this repository. Original playground game directories retained unchanged.
+- Full source build: four locked Vite builds and portal packaging passed. Hash discovery removes hand-maintained asset names. Generated `public/` and game `dist/` excluded from Git; Pages builds from source.
+- Portal tests: 9 passed, including successful import followed by removal of the original, invalid import rollback, symlink/path escape and publish recovery.
+- Imported game focused tests: 57 unit tests across 7 games plus 51 Neon Lane checks passed. Games without a meaningful unit suite are covered by browser play checks, not counted as unit-tested.
+- Browser: 12/12 first interactions and runtime state changes, search/filter/404, 390x844 mobile and 1440x1000 desktop captures. Console/page/network errors: 0. The mobile genre-wrap defect was fixed and screenshot verified. Empty Gomdori thumbnail replaced with an actual gameplay canvas capture.
+- Skill: `skills/host-playground-games` validated; user skill points to this versioned source. Candidate scanner executes successfully. Import and update workflow in `docs/ADDING_GAMES.md`.
+- `scripts/build_web.sh`: build/test/validate and durable managed preview passed. Actual listener `*:23171` PID 14451, HTTP probes passed for LAN and Tailscale. This proves same-machine responses, not access from a separate device. Preview assignments are machine-local and should be re-read from helper output.
+- DNS boundary at verification: `loa.mibstudio.top` still resolved through Porkbun parking; Porkbun browser showed login, so custom-domain connection and HTTPS were pending user login. See `docs/DEPLOYMENT.md` for continuation.
+- Browser artifacts are ignored under `output/visual-qa/`; public deployment must be checked against the commit workflow after push.
+
+---
+
+## Historical verification (2026-07)
+
 # Verification record
 
 Date: 2026-07-15 KST

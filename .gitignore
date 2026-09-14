@@ -1,4 +1,9 @@
 node_modules/
+public/
+games/*/dist/
+env.dev.local
+games/**/output/
+games/**/env.dev.local
 .DS_Store
 .local/
 .playwright-cli/

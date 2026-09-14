@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "promotedAt": "2026-09-14",
+  "project": {
+    "slug": "playground-arcade-store",
+    "displayName": "LOA 게임 포털"
+  },
+  "source": {
+    "kind": "existing-git-playground-project",
+    "playgroundSourcePath": "/Volumes/BigHugeMemory/works/playground/playground-arcade-store",
+    "preservedRepository": "https://github.com/doctor-clawler/playground-arcade-store"
+  },
+  "control": {
+    "channelId": "C0ANCTS9P4H",
+    "rootPostId": "1789368279.518389"
+  },
+  "gameSourcePolicy": "Imported copies under games/ are canonical; original playground folders retained."
+}

@@ -8,9 +8,15 @@
     "sync": "node scripts/sync-games.mjs",
     "validate": "node scripts/validate.mjs",
     "add-game": "node scripts/add-game.mjs",
-    "test": "node --test tests/*.test.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "import-game": "node scripts/import-game.mjs",
+    "build:web": "bash scripts/build_web.sh",
+    "test:browser": "node scripts/verify-browser.mjs"
   },
   "engines": {
     "node": ">=20"
+  },
+  "devDependencies": {
+    "playwright": "1.61.1"
   }
 }

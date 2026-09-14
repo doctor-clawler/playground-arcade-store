@@ -1,0 +1,4 @@
+interface:
+  display_name: "Host Playground Games"
+  short_description: "놀이터 웹게임을 안전하게 등록하고 검증·배포합니다"
+  default_prompt: "Use $host-playground-games to scan recent #놀이터 games, publish every qualified static bundle, verify mobile play, and deploy the catalog."

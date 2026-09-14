@@ -44,3 +44,13 @@ Original prompt: `/Volumes/BigHugeMemory/works/playground`에서 #놀이터의 �
 - Vite/Three.js 출력의 CSS, root-relative asset, classic script 실행 시점과 opaque sandbox 저장소 예외를 publish 단계에서 정규화했다.
 - 390×844 브라우저 자동화에서 12개 모두 상세→플레이→첫 상호작용을 확인했다. console/page error와 failed request는 0건이다.
 - 반복 작업용 `$host-playground-games` 스킬과 후보 스캐너를 `~/.codex/skills/host-playground-games`에 생성하고 skill validator를 통과했다.
+
+
+## 2026-09-14 formal LOA project
+
+- Promoted the existing Git repository to `/Volumes/BigHugeMemory/works/playground-arcade-store` and registered `#loa` via the canonical `_ops import` service. Existing GitHub repository retained.
+- Imported all 12 games' editable sources, tests and product thumbnails. Original playground folders are preserved. Future development uses `games/<id>/`.
+- Replaced playground build dependencies with repository-local paths, built Vite from locked source dependencies, moved portal source to `site/`, and made `public/` fully generated.
+- Added transactional reviewed imports, generic project `build_web.sh`, portable browser verification, versioned skill and developer workflow. Global skill points to this repository.
+- Passed 9 portal tests, imported game focused tests, and all 12 browser first-play/state checks. Corrected mobile filter wrapping and captured a real Gomdori thumbnail.
+- Custom-domain DNS is prepared for `loa.mibstudio.top`; Porkbun authentication is the pending external boundary. No parking or unrelated domain records changed.

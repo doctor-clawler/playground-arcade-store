@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <title>곰돌이</title>
+    <link rel="stylesheet" href="./styles.css?v=20260620-1725" />
+  </head>
+  <body>
+    <main class="game-shell" aria-label="곰돌이 게임">
+      <canvas id="game" width="960" height="600" aria-label="곰돌이 플레이 화면"></canvas>
+      <div class="touch-controls" aria-label="터치 조작">
+        <div class="dpad" aria-label="이동">
+          <span></span>
+          <button type="button" data-hold="ArrowUp" aria-label="위로 이동"><span class="arrow arrow-up" aria-hidden="true"></span></button>
+          <span></span>
+          <button type="button" data-hold="ArrowLeft" aria-label="왼쪽 이동"><span class="arrow arrow-left" aria-hidden="true"></span></button>
+          <button type="button" data-hold="ArrowDown" aria-label="아래로 이동"><span class="arrow arrow-down" aria-hidden="true"></span></button>
+          <button type="button" data-hold="ArrowRight" aria-label="오른쪽 이동"><span class="arrow arrow-right" aria-hidden="true"></span></button>
+        </div>
+        <button class="action-btn" type="button" data-action="interact" aria-label="조사"><span class="inspect-icon" aria-hidden="true"></span></button>
+      </div>
+      <div class="outside-note">WASD/방향키 또는 화면 버튼 이동 · E/조사 버튼</div>
+    </main>
+    <script type="module" src="./game3d.js?v=20260620-1725"></script>
+  </body>
+</html>

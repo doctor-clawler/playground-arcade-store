@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hospital Ward 3D</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main id="game-root" aria-label="Hospital Ward 3D game">
+      <div id="crosshair" aria-hidden="true"></div>
+
+      <section id="hud" aria-live="polite">
+        <div class="health-wrap">
+          <span>체력</span>
+          <div class="health-meter" aria-hidden="true">
+            <div id="health-fill"></div>
+          </div>
+          <strong id="health-value">100</strong>
+        </div>
+        <div id="status-chip">접수 대기</div>
+      </section>
+
+      <section id="rooms-strip" aria-label="진료실 상태">
+        <span id="room-1">1 비어있음</span>
+        <span id="room-2">2 비어있음</span>
+        <span id="room-3">3 비어있음</span>
+      </section>
+
+      <section id="move-pad" aria-label="이동">
+        <button id="move-forward" type="button" data-move="forward" aria-label="앞으로 이동">▲</button>
+        <button id="move-left" type="button" data-move="left" aria-label="왼쪽 이동">◀</button>
+        <button id="move-back" type="button" data-move="back" aria-label="뒤로 이동">▼</button>
+        <button id="move-right" type="button" data-move="right" aria-label="오른쪽 이동">▶</button>
+      </section>
+
+      <button id="talisman-button" type="button" aria-label="부적 들기">부적</button>
+
+      <section id="dialogue" class="hidden" aria-modal="true" role="dialog">
+        <div id="guest-line">...</div>
+        <div class="dialogue-actions">
+          <button id="admit-button" type="button">들어가</button>
+          <button id="reject-button" type="button">잘가!</button>
+        </div>
+      </section>
+
+      <section id="start-panel">
+        <h1>병원 야간 접수</h1>
+        <button id="start-button" type="button">시작</button>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

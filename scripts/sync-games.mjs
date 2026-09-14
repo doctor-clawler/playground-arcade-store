@@ -5,7 +5,9 @@ import {
   assertRealPathInside,
   assertSafeId,
   manifestPath,
-  playgroundRoot,
+  sourceRoot as allowedSourceRoot,
+  siteRoot,
+  hydrateManifest,
   projectRoot,
   publicGame,
   publicRoot,
@@ -29,7 +31,7 @@ function stripModuleSyntax(source) {
 function replaceScript(html, sourcePath, replacement, { moduleOnly = false } = {}) {
   let replaced = false;
   const next = html.replace(/<script\b([^>]*)\bsrc=["']([^"']+)["']([^>]*)><\/script>/gi, (tag, before, src, after) => {
-    if (src !== sourcePath || (moduleOnly && !/\btype=["']module["']/i.test(`${before} ${after}`))) return tag;
+    if (src.split(/[?#]/)[0] !== sourcePath.split(/[?#]/)[0] || (moduleOnly && !/\btype=["']module["']/i.test(`${before} ${after}`))) return tag;
     replaced = true;
     return replacement;
   });
@@ -178,7 +180,7 @@ async function currentBuiltAt(version) {
 }
 
 export async function syncGames({ manifest: manifestOverride, persistManifest = false } = {}) {
-  const manifest = manifestOverride ?? await readManifest();
+  const manifest = manifestOverride ? await hydrateManifest(manifestOverride) : await readManifest();
   const games = manifest.games;
   if (!Array.isArray(games) || games.length < 3) throw new Error("At least three games are required");
   const releasePublishLock = await acquirePublishLock();
@@ -191,7 +193,7 @@ export async function syncGames({ manifest: manifestOverride, persistManifest = 
 
   try {
     await mkdir(transactionRoot, { recursive: true });
-    await cp(publicRoot, stagingRoot, { recursive: true });
+    await cp(siteRoot, stagingRoot, { recursive: true });
     await mkdir(path.join(stagingRoot, "assets"), { recursive: true });
     await rm(path.join(stagingRoot, "games"), { recursive: true, force: true });
     await mkdir(path.join(stagingRoot, "games"), { recursive: true });
@@ -202,8 +204,8 @@ export async function syncGames({ manifest: manifestOverride, persistManifest = 
       if (ids.has(game.id)) throw new Error(`Duplicate game id: ${game.id}`);
       ids.add(game.id);
 
-      const sourceRoot = resolveInside(playgroundRoot, game.sourcePath, `${game.id} sourcePath`);
-      await assertRealPathInside(playgroundRoot, sourceRoot, `${game.id} sourcePath`);
+      const sourceRoot = resolveInside(allowedSourceRoot, game.sourcePath, `${game.id} sourcePath`);
+      await assertRealPathInside(allowedSourceRoot, sourceRoot, `${game.id} sourcePath`);
       const destinationRoot = resolveInside(path.join(stagingRoot, "games"), game.id, `${game.id} destination`);
       await mkdir(destinationRoot, { recursive: true });
 
@@ -252,8 +254,8 @@ export async function syncGames({ manifest: manifestOverride, persistManifest = 
       await writeFile(entryFile, html);
       await writeFile(path.join(destinationRoot, "store-bridge.js"), bridgeSource);
 
-      const thumbnailSource = resolveInside(playgroundRoot, game.thumbnailSource, `${game.id} thumbnail`);
-      await assertRealPathInside(playgroundRoot, thumbnailSource, `${game.id} thumbnail`);
+      const thumbnailSource = resolveInside(allowedSourceRoot, game.thumbnailSource, `${game.id} thumbnail`);
+      await assertRealPathInside(allowedSourceRoot, thumbnailSource, `${game.id} thumbnail`);
       await assertRegularFile(thumbnailSource, `${game.id} thumbnail`);
       await cp(thumbnailSource, path.join(stagingRoot, "assets", `thumb-${game.id}.png`), { force: true });
     }
@@ -272,16 +274,18 @@ export async function syncGames({ manifest: manifestOverride, persistManifest = 
     await writeFile(path.join(stagingRoot, "version.json"), `${JSON.stringify({ version: manifest.storeVersion, builtAt: await currentBuiltAt(manifest.storeVersion) }, null, 2)}\n`);
     await validateBuild({ root: stagingRoot, manifest });
 
-    if (persistManifest) await writeFile(manifestNext, `${JSON.stringify(manifest, null, 2)}\n`);
+    if (persistManifest) await writeFile(manifestNext, `${JSON.stringify(manifestOverride ?? manifest, null, 2)}\n`);
 
-    await rename(publicRoot, backupRoot);
-    backupActive = true;
+    if (await pathExists(publicRoot)) {
+      await rename(publicRoot, backupRoot);
+      backupActive = true;
+    }
     try {
       await rename(stagingRoot, publicRoot);
       if (persistManifest) await rename(manifestNext, manifestPath);
     } catch (error) {
       await rm(publicRoot, { recursive: true, force: true });
-      await rename(backupRoot, publicRoot);
+      if (backupActive) await rename(backupRoot, publicRoot);
       backupActive = false;
       throw error;
     }

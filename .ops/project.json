@@ -1,0 +1,9 @@
+{
+  "slug": "playground-arcade-store",
+  "displayName": "LOA 게임 포털",
+  "path": "/Volumes/BigHugeMemory/works/playground-arcade-store",
+  "slackChannelId": "C0C1P2B8LSV",
+  "slackChannelName": "loa",
+  "githubRepository": "doctor-clawler/playground-arcade-store",
+  "customDomain": "loa.mibstudio.top"
+}

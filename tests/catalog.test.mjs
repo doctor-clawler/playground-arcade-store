@@ -2,18 +2,19 @@ import assert from "node:assert/strict";
 import { access, cp, mkdir, readFile, rm, symlink, utimes, writeFile } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
-import { manifestPath, playgroundRoot, projectRoot, resolveInside } from "../scripts/lib.mjs";
+import { manifestPath, projectRoot, resolveInside } from "../scripts/lib.mjs";
 import { syncGames } from "../scripts/sync-games.mjs";
 import { validateBuild } from "../scripts/validate.mjs";
+import { importGame } from "../scripts/import-game.mjs";
 
 test("manifest registers three unique playable games", async () => {
   const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
   assert.ok(manifest.games.length >= 3);
   assert.equal(new Set(manifest.games.map((game) => game.id)).size, manifest.games.length);
   for (const game of manifest.games) {
-    const sourceRoot = resolveInside(playgroundRoot, game.sourcePath);
+    const sourceRoot = resolveInside(projectRoot, game.sourcePath);
     await access(resolveInside(sourceRoot, game.entry));
-    await access(resolveInside(playgroundRoot, game.thumbnailSource));
+    await access(resolveInside(projectRoot, game.thumbnailSource));
     assert.match(game.provenance.threadUrl, /^https:\/\/mibcompany\.slack\.com\/archives\/C0B07FH4M3R\//);
     assert.ok(game.controls.length >= 3);
     assert.ok(game.mobileControls.length >= 3);
@@ -62,7 +63,7 @@ test("failed candidate publish leaves the manifest and live catalog unchanged", 
 });
 
 test("candidate publish rejects bundle symlinks that escape the source root", async () => {
-  const fixtureRoot = path.join(playgroundRoot, ".publish-symlink-fixture");
+  const fixtureRoot = path.join(projectRoot, ".publish-symlink-fixture");
   await rm(fixtureRoot, { recursive: true, force: true });
   await mkdir(fixtureRoot);
   await symlink("/etc/hosts", path.join(fixtureRoot, "escape.html"));
@@ -131,5 +132,41 @@ test("an abandoned recovery lock is reclaimed after the safety window", async ()
   } finally {
     await rm(lockRoot, { recursive: true, force: true });
     await rm(recoveryRoot, { recursive: true, force: true });
+  }
+});
+
+test("a reviewed import works without its original and rolls back invalid imports", async () => {
+  const original = await readFile(manifestPath, "utf8");
+  const fixture = path.join(projectRoot, ".local/import-fixture");
+  const dest = path.join(projectRoot, "games/import-fixture");
+  const thumbnail = path.join(projectRoot, "assets-source/thumbnails/import-fixture.png");
+  await mkdir(path.join(fixture, "candidate"), { recursive: true });
+  await writeFile(path.join(fixture, "candidate/index.html"), '<html><head></head><body><button>play</button></body></html>');
+  await cp(path.join(projectRoot, "assets-source/thumbnails/tooth-runner.png"), path.join(fixture, "shot.png"));
+  const base = JSON.parse(original).games[0];
+  const spec = {
+    projectPath: "candidate", projectFiles: ["index.html"], thumbnailSource: "shot.png",
+    game: { ...base, id: "import-fixture", entry: "index.html", bundleFiles: ["index.html"] }
+  };
+  delete spec.game.classicBundle;
+  try {
+    await assert.rejects(importGame({ ...spec, projectFiles: ["../shot.png"] }, { fromRoot: fixture }), /escapes allowed root/);
+    await assert.rejects(importGame({ ...spec, projectFiles: [".env"] }, { fromRoot: fixture }), /Excluded source/);
+    await assert.rejects(importGame({ ...spec, game: { ...spec.game, entry: "missing.html" } }, { fromRoot: fixture }), /ENOENT/);
+    assert.equal(await readFile(manifestPath, "utf8"), original);
+    await assert.rejects(access(dest), /ENOENT/);
+    const result = await importGame(spec, { fromRoot: fixture });
+    assert.equal(result.gameCount, JSON.parse(original).games.length + 1);
+    await rm(fixture, { recursive: true });
+    await syncGames();
+    assert.equal((await validateBuild()).gameCount, result.gameCount);
+    await access(path.join(dest, "index.html"));
+    assert.doesNotMatch(await readFile(path.join(projectRoot, "public/catalog.json"), "utf8"), /importedFrom|localSource|threadUrl/);
+  } finally {
+    await writeFile(manifestPath, original);
+    await rm(dest, { recursive: true, force: true });
+    await rm(thumbnail, { force: true });
+    await rm(fixture, { recursive: true, force: true });
+    await syncGames();
   }
 });
