@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "contract": "https://github.com/WithClawler/_ops/blob/feat/ops-v2-safe-supervision/docs/privacy/contract.md",
+  "app": {
+    "id": "playground-arcade-store",
+    "source_path": "/Volumes/BigHugeMemory/works/playground-arcade-store",
+    "branch": "main",
+    "reviewed_head": "1f25bdd52f65a03cba2c6fb3fa27b04525bad566",
+    "repository": "git@github.com:doctor-clawler/playground-arcade-store.git",
+    "controller": "unknown unless app-specific operator evidence confirms Mib Studio"
+  },
+  "review_status": "unreviewed",
+  "release_ready": false,
+  "flows": [],
+  "unresolved": [
+    "First-party SDK/permission signals require call-path, final artifact and live processing review.",
+    "Target age, legal basis, provider regions/retention and public policy/store correspondence are not established by enrollment."
+  ]
+}
