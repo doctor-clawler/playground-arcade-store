@@ -1,0 +1,36 @@
+schema: spec-driven
+context: >
+  Project: playground-arcade-store. OpenSpec root is this repository/workspace.
+
+  Language: Korean. Keep OpenSpec structural headings and SHALL/MUST keywords in
+  English.
+
+  Read applicable AGENTS.md first; project entrypoints: AGENTS.md, README.md.
+
+  Source manifests: package.json. Read current versions from these files.
+
+  Existing code, project documentation and the project SSOT define current
+  behavior; do not infer implemented features from old plans.
+
+  Preserve the current branch and unrelated WIP. Keep secrets, local runtime
+  data, logs and build outputs out of specs and commits.
+
+  Use the shared openspec-workflow skill for an implementation request. Honor
+  planning-only requests; do not add a new approval gate to already authorized
+  implementation.
+rules:
+  proposal:
+    - 사용자가 기대하는 결과, 범위와 완료 기준을 현재 구현 근거와 함께 작성한다.
+  specs:
+    - 기존 SSOT를 중복 정의하지 않고 관찰 가능한 동작과 검증 가능한 시나리오를 작성한다.
+  design:
+    - 관련 프로젝트 지침과 데이터 원본을 참조하고 기존 변경·호환성에 미치는 영향을 설명한다.
+  tasks:
+    - 실제 변경에 필요한 구현·검증·문서·전달 작업을 포함하고 완료 근거가 있을 때만 체크한다.
+operations:
+  apply:
+    guidance:
+      - 요청 범위와 기존 승인을 유지한다. 소규모 문서/설정 변경에는 불필요한 제품 빌드나 재시작을 추가하지 않는다.
+  archive:
+    guidance:
+      - 요청된 구현·검증·전달이 모두 완료되었는지 확인하고 미완료 또는 외부 차단이 있으면 활성 상태를 유지한다.
